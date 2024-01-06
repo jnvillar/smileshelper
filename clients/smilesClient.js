@@ -133,8 +133,10 @@ const getFlights = async (parameters) => {
     const {origin, destination, departureDate, cabinType, adults, preferences, startDate, endDate} = parameters;
     const lastDayOfMonthDeparture = lastDays.get(departureDate.substring(5));
     const getFlightPromises = [];
-    const startDateFinal = startDate > 0 ? startDate : calculateFirstDay(departureDate);
-    const endDateFinal = endDate > 0 ? endDate : lastDayOfMonthDeparture;
+    const startDateFinal = parseInt(startDate > 0 ? startDate : calculateFirstDay(departureDate));
+    const endDateFinal = parseInt(endDate > 0 ? endDate : lastDayOfMonthDeparture);
+
+
 
     for (let day = startDateFinal; day <= endDateFinal; day++) {
         const params = buildParams(origin, destination, departureDate.replace("/", "-"), adults, false, day, preferences?.brasilNonGol ? "true" : "false");
@@ -142,7 +144,10 @@ const getFlights = async (parameters) => {
     }
 
     const flightResults = (await Promise.all(getFlightPromises)).flat();
-    const mappedFlightResults = (await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))).filter(flight => validFlight(flight));
+    const mappedFlightResults = (
+        await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
+    )
+        .filter(flight => validFlight(flight));
 
     return {
         results: sortFlights(mappedFlightResults).slice(0, getBestFlightsCount(preferences?.maxresults)),
@@ -155,8 +160,8 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
     const multipleCity = isMultipleOrigin ? origin : destination;
     const lastDayOfMonthDeparture = lastDays.get(departureDate.substring(5));
     const getFlightPromises = [];
-    let startDateFinal = startDate > 0 ? startDate : calculateFirstDay(departureDate);
-    let endDateFinal = endDate > 0 ? endDate : lastDayOfMonthDeparture;
+    let startDateFinal = parseInt(startDate > 0 ? startDate : calculateFirstDay(departureDate));
+    let endDateFinal = parseInt(endDate > 0 ? endDate : lastDayOfMonthDeparture);
     if (fixedDay) {
         startDateFinal = 0
         endDateFinal = 1
@@ -170,7 +175,10 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
     }
 
     const flightResults = (await Promise.all(getFlightPromises)).flat();
-    const mappedFlightResults = (await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))).filter(flight => validFlight(flight));
+    const mappedFlightResults = (
+        await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
+    )
+        .filter(flight => validFlight(flight));
 
     return {
         results: sortFlights(mappedFlightResults.flat()).slice(0, getBestFlightsCount(preferences?.maxresults)),
