@@ -189,6 +189,8 @@ function shouldSendAlert(previous_result, new_result) {
 }
 
 function getMinPrice(text) {
+    // if text does not contains jumpline (\n) return undefined
+    if (!text.includes("\n")) return undefined;
     const lines = text.split('\n').filter(line => line.trim() !== '');
     let minPrice = lines.reduce((min, line) => {
         const price = parsePrice(line);
