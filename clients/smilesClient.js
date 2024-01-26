@@ -149,10 +149,9 @@ const createFlightObject = async (flightResult, preferences, cabinType) => {
         duration: flight.duration?.hours?.toString(),
         airline: flight.airline?.name,
         seats: flight.availableSeats?.toString(),
-        tax: 0,
-        /*tax: fareUid
+        tax: fareUid
             ? await getTax(flight.uid, fareUid, preferences?.smilesAndMoney)
-            : undefined,*/
+            : {miles: 0, money: 0},
     };
 };
 
