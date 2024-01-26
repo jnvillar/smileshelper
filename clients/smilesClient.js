@@ -304,7 +304,7 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
             message: error.message,
             code: error.code
         }));
-        return {miles: undefined};
+        return {miles: 0, money: 0};
     }
 };
 
