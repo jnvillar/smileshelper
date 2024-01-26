@@ -286,8 +286,7 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
 
 const validFlight = (flight) =>
     flight.price &&
-    flight.price !== Number.MAX_VALUE.toString() &&
-    flight.tax?.miles;
+    flight.price !== Number.MAX_VALUE.toString()
 
 const getBestFlightsCount = (preferencesMaxResults) =>
     !preferencesMaxResults
