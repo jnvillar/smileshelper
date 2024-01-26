@@ -511,13 +511,18 @@ listen();
 
 const queue = [];
 let isProcessing = false;
-const rateLimitInterval = 60 * 1000; // 1 minute
+const rateLimitInterval = 30 * 1000; // 1 minute
 
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
     const shouldProcessImmediately = !isProcessing && queue.length === 0;
     queue.push({requestFunction, args});
 
-    await args[2].sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue.length}. Tiempo: ${(queue.length - 1) * rateLimitInterval / 1000} segundos`);
+    let queue_size = queue.length;
+    if (isProcessing) {
+        queue_size += 1;
+    }
+
+    await args[2].sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${(queue_size - 1) * rateLimitInterval / 1000} segundos`);
 
     if (shouldProcessImmediately) {
         processQueue();
