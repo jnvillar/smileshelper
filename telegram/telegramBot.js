@@ -122,23 +122,23 @@ async function handleSearch(searchText, msg, bot, send_message = true) {
     switch (true) {
         case regexSingleCities.test(searchText):
             groups = regexSingleCities.exec(searchText);
-            res = await searchSingleDestination(groups, msg, bot, send_message);
+            res = await searchSingleDestinationWrapper(groups, msg, bot, send_message);
             break;
         case regexMultipleDestinationMonthly.test(searchText):
             groups = regexMultipleDestinationMonthly.exec(searchText);
-            res = await searchMultipleDestination(groups, msg, bot, false, false, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, false, false, send_message);
             break;
         case regexMultipleDestinationFixedDay.test(searchText):
             groups = regexMultipleDestinationFixedDay.exec(searchText);
-            res = await searchMultipleDestination(groups, msg, bot, true, false, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, true, false, send_message);
             break;
         case regexMultipleOriginMonthly.test(searchText):
             groups = regexMultipleOriginMonthly.exec(searchText);
-            res = await searchMultipleDestination(groups, msg, bot, false, true, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, false, true, send_message);
             break;
         case regexMultipleOriginFixedDay.test(searchText):
             groups = regexMultipleOriginFixedDay.exec(searchText);
-            res = await searchMultipleDestination(groups, msg, bot, true, true, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, true, true, send_message);
             break;
         default:
             console.log(`error: ${searchText} does not match any case`);
@@ -293,23 +293,23 @@ const listen = async () => {
     );
 
     bot.onText(regexSingleCities, async (msg, match) => {
-        await searchSingleDestination(match, msg, bot);
+        await searchSingleDestinationWrapper(match, msg, bot);
     });
 
     bot.onText(regexMultipleDestinationMonthly, async (msg, match) => {
-        await searchMultipleDestination(match, msg, bot, false, false);
+        await searchMultipleDestinationWrapper(match, msg, bot, false, false);
     });
 
     bot.onText(regexMultipleDestinationFixedDay, async (msg, match) => {
-        await searchMultipleDestination(match, msg, bot, true, false);
+        await searchMultipleDestinationWrapper(match, msg, bot, true, false);
     });
 
     bot.onText(regexMultipleOriginMonthly, async (msg, match) => {
-        await searchMultipleDestination(match, msg, bot, false, true);
+        await searchMultipleDestinationWrapper(match, msg, bot, false, true);
     });
 
     bot.onText(regexMultipleOriginFixedDay, async (msg, match) => {
-        await searchMultipleDestination(match, msg, bot, true, true);
+        await searchMultipleDestinationWrapper(match, msg, bot, true, true);
     });
 
     bot.onText(regexRoundTrip, async (msg) => {
@@ -327,7 +327,7 @@ const listen = async () => {
         const match = query.data.split(" ");
         const entireCommand = [query.data];
         if (match[0].length > 3) {
-            await searchMultipleDestination(
+            await searchMultipleDestinationWrapper(
                 entireCommand.concat(match),
                 query.message,
                 bot,
@@ -335,7 +335,7 @@ const listen = async () => {
                 true
             );
         } else if (match[1].length > 3) {
-            await searchMultipleDestination(
+            await searchMultipleDestinationWrapper(
                 entireCommand.concat(match),
                 query.message,
                 bot,
@@ -343,7 +343,7 @@ const listen = async () => {
                 false
             );
         } else {
-            await searchSingleDestination(
+            await searchSingleDestinationWrapper(
                 entireCommand.concat(match),
                 query.message,
                 bot
@@ -508,3 +508,62 @@ const listen = async () => {
 
 process.env.TZ = 'America/Argentina/Buenos_Aires'
 listen();
+
+const queue = [];
+let isProcessing = false;
+const rateLimitInterval = 60 * 1000; // 1 minute
+
+
+function enqueueRequest(requestFunction, args) {
+    const shouldProcessImmediately = !isProcessing && queue.length === 0;
+    queue.push({ requestFunction, args });
+
+    if (shouldProcessImmediately) {
+        processQueue();
+    }
+}
+
+async function processQueue() {
+    if (isProcessing || queue.length === 0) {
+        return;
+    }
+
+    isProcessing = true;
+    const {requestFunction, args} = queue.shift();
+
+    try {
+        await requestFunction(...args);
+    } catch (error) {
+        console.error("Error processing request:", error);
+    } finally {
+        isProcessing = false;
+    }
+}
+
+// Start continuous processing
+setInterval(processQueue, rateLimitInterval);
+
+// Wrap your search functions for queueing
+async function searchMultipleDestinationWrapper(...args) {
+    let send_message = true;
+    if (args.length >= 5) {
+        send_message = args[4];
+    }
+    if (send_message) {
+        const chatId = args[1].chat.id;
+        await args[2].sendMessage(chatId, `La búsqueda fue encolada. Posición en la cola: ${queue.length + 1}. Tiempo: ${queue.length * rateLimitInterval / 1000} segundos`);
+    }
+    enqueueRequest(searchMultipleDestination, args);
+}
+
+async function searchSingleDestinationWrapper(...args) {
+    let send_message = true;
+    if (args.length >= 4) {
+        send_message = args[3];
+    }
+    if (send_message) {
+        const chatId = args[1].chat.id;
+        await args[2].sendMessage(chatId, `La búsqueda fue encolada. Posición en la cola: ${queue.length + 1}. Tiempo: ${queue.length * rateLimitInterval / 1000} segundos`);
+    }
+    enqueueRequest(searchSingleDestination, args);
+}

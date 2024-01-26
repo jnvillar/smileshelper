@@ -151,7 +151,7 @@ const createFlightObject = async (flightResult, preferences, cabinType) => {
         seats: flight.availableSeats?.toString(),
         tax: fareUid
             ? await getTax(flight.uid, fareUid, preferences?.smilesAndMoney)
-            : {miles: 0, money: 0},
+            : undefined,
     };
 };
 
@@ -304,7 +304,7 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
             message: error.message,
             code: error.code
         }));
-        return {miles: 0, money: 0};
+        return {miles: 0};
     }
 };
 
