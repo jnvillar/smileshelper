@@ -513,10 +513,11 @@ const queue = [];
 let isProcessing = false;
 const rateLimitInterval = 60 * 1000; // 1 minute
 
-
-function enqueueRequest(requestFunction, args) {
+async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
     const shouldProcessImmediately = !isProcessing && queue.length === 0;
-    queue.push({ requestFunction, args });
+    queue.push({requestFunction, args});
+
+    await args[2].sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue.length}. Tiempo: ${(queue.length - 1) * rateLimitInterval / 1000} segundos`);
 
     if (shouldProcessImmediately) {
         processQueue();
@@ -549,11 +550,7 @@ async function searchMultipleDestinationWrapper(...args) {
     if (args.length >= 5) {
         send_message = args[4];
     }
-    if (send_message) {
-        const chatId = args[1].chat.id;
-        await args[2].sendMessage(chatId, `La búsqueda fue encolada. Posición en la cola: ${queue.length + 1}. Tiempo: ${queue.length * rateLimitInterval / 1000} segundos`);
-    }
-    enqueueRequest(searchMultipleDestination, args);
+    enqueueRequest(searchMultipleDestination, args, args[1].chat.id, args[2], send_message);
 }
 
 async function searchSingleDestinationWrapper(...args) {
@@ -561,9 +558,5 @@ async function searchSingleDestinationWrapper(...args) {
     if (args.length >= 4) {
         send_message = args[3];
     }
-    if (send_message) {
-        const chatId = args[1].chat.id;
-        await args[2].sendMessage(chatId, `La búsqueda fue encolada. Posición en la cola: ${queue.length + 1}. Tiempo: ${queue.length * rateLimitInterval / 1000} segundos`);
-    }
-    enqueueRequest(searchSingleDestination, args);
+    enqueueRequest(searchSingleDestination, args, args[1].chat.id, args[2], send_message);
 }
