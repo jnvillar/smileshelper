@@ -180,6 +180,9 @@ async function loadAlert(bot, alert, just_created = false) {
 function shouldSendAlert(previous_result, new_result) {
     try {
         const previousMinPrice = getMinPrice(previous_result);
+        if (previousMinPrice === undefined) {
+            return true
+        }
         const newMinPrice = getMinPrice(new_result);
         return newMinPrice < previousMinPrice;
     } catch (e) {
