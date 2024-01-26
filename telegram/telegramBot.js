@@ -511,7 +511,8 @@ listen();
 
 const queue = [];
 let isProcessing = false;
-const rateLimitInterval = 15 * 1000; // 1 minute
+const intervalInSeconds = 30
+const rateLimitInterval = intervalInSeconds * 1000;
 
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
     const shouldProcessImmediately = !isProcessing && queue.length === 0;
