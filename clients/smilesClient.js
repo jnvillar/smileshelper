@@ -32,7 +32,6 @@ const createAxiosClient = (baseURL) => {
     client.interceptors.request.use(config => {
         // Rotate the authorization token and keep other headers constant
         auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`
-        console.log(auth)
         config.headers = {
             ...config.headers,
             authorization: `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`,
