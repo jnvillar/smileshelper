@@ -16,11 +16,31 @@ const headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
 };
 
-const createAxiosClient = (baseURL) => axios.create({
-    baseURL,
-    headers,
-    insecureHTTPParser: true,
-});
+const createAxiosClient = (baseURL) => {
+    const client = axios.create({
+        baseURL,
+        insecureHTTPParser: true,
+    });
+
+    client.interceptors.request.use(config => {
+        // Rotate the authorization token and keep other headers constant
+        auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`
+        console.log(auth)
+        config.headers = {
+            ...config.headers,
+            authorization: `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`,
+            'x-api-key': smiles.apiKey,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            region: 'ARGENTINA',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        };
+        return config;
+    });
+
+    return client;
+};
+
 
 const smilesClient = createAxiosClient(SMILES_URL);
 const smilesTaxClient = createAxiosClient(SMILES_TAX_URL);
@@ -123,7 +143,7 @@ const createFlightObject = async (flightResult, preferences, cabinType) => {
         duration: flight.duration?.hours?.toString(),
         airline: flight.airline?.name,
         seats: flight.availableSeats?.toString(),
-        tax: undefined,
+        tax: 0,
         /*tax: fareUid
             ? await getTax(flight.uid, fareUid, preferences?.smilesAndMoney)
             : undefined,*/
@@ -286,7 +306,8 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
 
 const validFlight = (flight) =>
     flight.price &&
-    flight.price !== Number.MAX_VALUE.toString()
+    flight.price !== Number.MAX_VALUE.toString() &&
+    flight.tax?.miles;
 
 const getBestFlightsCount = (preferencesMaxResults) =>
     !preferencesMaxResults
