@@ -511,7 +511,7 @@ listen();
 
 const queue = [];
 let isProcessing = false;
-const intervalInSeconds = 45
+const intervalInSeconds = 60
 const rateLimitInterval = intervalInSeconds * 1000;
 let lastRequestTime = 0; // Timestamp of the last processed request
 
