@@ -3,14 +3,18 @@ const {buildError} = require("../utils/error");
 const {padMonth} = require("../utils/string");
 const {searchCityQuery, searchRegionalQuery} = require("./search");
 
-const sendMessageInChunks = async (bot, chatId, response, inlineKeyboardMonths) => {
+const sendMessageInChunks = async (search, bot, chatId, response, inlineKeyboardMonths) => {
     if (!response) return;
 
     const maxResultsPerMessage = 35;
     const lines = response.split("\n");
 
+    if (lines.length === 1) {
+        lines[0] = `${search[0]}: ${lines[0]}`;
+    }
+
     if (lines.length > 1) {
-        lines[0] = `${lines[0]} ${lines.length - 2} resultados`;
+        lines[0] = `${search[0]}: ${lines.length - 2} resultados`;
     }
 
     let results = [];
@@ -32,7 +36,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true) => 
 
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, searching);
+        bot.sendMessage(chatId, `${match[0]}: ${searching}`)
     }
 
     try {
@@ -40,14 +44,14 @@ const searchSingleDestination = async (match, msg, bot, send_message = true) => 
         const inlineKeyboardMonths = getInlineKeyboardMonths(match);
 
         if (send_message) {
-            await sendMessageInChunks(bot, chatId, response, inlineKeyboardMonths);
+            await sendMessageInChunks(match, bot, chatId, response, inlineKeyboardMonths);
         }
 
         return response
     } catch (error) {
         console.error(error.message);
         if (send_message) {
-            bot.sendMessage(chatId, buildError(error.message));
+            bot.sendMessage(chatId, `${match[0]}: ${buildError(error.message)}`);
         }
 
     }
@@ -56,19 +60,19 @@ const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOr
     console.log(`${new Date().toLocaleTimeString()} ${msg.chat.username} ${match[0]}`);
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, searching);
+        bot.sendMessage(chatId, `${match[0]}: ${searching}`);
     }
 
     try {
         const {response} = await searchRegionalQuery(msg, match, fixedDay, isMultipleOrigin);
         if (send_message) {
-            await sendMessageInChunks(bot, chatId, response, getInlineKeyboardMonths(match));
+            await sendMessageInChunks(match, bot, chatId, response, getInlineKeyboardMonths(match));
         }
         return response
     } catch (error) {
         console.error(error.message);
         if (send_message) {
-            bot.sendMessage(chatId, buildError(error.message));
+            bot.sendMessage(chatId, `${match[0]}: ${buildError(error.message)}`);
         }
     }
 };

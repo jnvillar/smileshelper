@@ -293,23 +293,23 @@ const listen = async () => {
     );
 
     bot.onText(regexSingleCities, async (msg, match) => {
-        await searchSingleDestinationWrapper(match, msg, bot);
+        await searchSingleDestinationWrapper(match, msg, bot, true);
     });
 
     bot.onText(regexMultipleDestinationMonthly, async (msg, match) => {
-        await searchMultipleDestinationWrapper(match, msg, bot, false, false);
+        await searchMultipleDestinationWrapper(match, msg, bot, false, false, true);
     });
 
     bot.onText(regexMultipleDestinationFixedDay, async (msg, match) => {
-        await searchMultipleDestinationWrapper(match, msg, bot, true, false);
+        await searchMultipleDestinationWrapper(match, msg, bot, true, false, true);
     });
 
     bot.onText(regexMultipleOriginMonthly, async (msg, match) => {
-        await searchMultipleDestinationWrapper(match, msg, bot, false, true);
+        await searchMultipleDestinationWrapper(match, msg, bot, false, true, true);
     });
 
     bot.onText(regexMultipleOriginFixedDay, async (msg, match) => {
-        await searchMultipleDestinationWrapper(match, msg, bot, true, true);
+        await searchMultipleDestinationWrapper(match, msg, bot, true, true, true);
     });
 
     bot.onText(regexRoundTrip, async (msg) => {
@@ -332,6 +332,7 @@ const listen = async () => {
                 query.message,
                 bot,
                 false,
+                true,
                 true
             );
         } else if (match[1].length > 3) {
@@ -340,13 +341,15 @@ const listen = async () => {
                 query.message,
                 bot,
                 false,
-                false
+                false,
+                true
             );
         } else {
             await searchSingleDestinationWrapper(
                 entireCommand.concat(match),
                 query.message,
-                bot
+                bot,
+                true
             );
         }
     });
@@ -525,12 +528,12 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
         queue_size += 1;
     }
     const now = Date.now();
-    let mustWait = 0
+    let mustWait = false
     if (queue_size === 1 && (now - lastRequestTime < rateLimitInterval)) {
-        mustWait = 1
+        mustWait = true
     }
     if (send_message && (mustWait || queue_size > 1)) {
-        await bot.sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${((queue_size - 1) * rateLimitInterval / 1000) + (mustWait * rateLimitInterval / 1000)} segundos`);
+        await bot.sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${((queue_size) * rateLimitInterval / 1000)} segundos`);
     }
 
     if (shouldProcessImmediately) {
@@ -568,8 +571,8 @@ setInterval(processQueue, 1000); // Check the queue every second
 // Wrap your search functions for queueing
 async function searchMultipleDestinationWrapper(...args) {
     let send_message = true;
-    if (args.length >= 5) {
-        send_message = args[4];
+    if (args.length >= 6) {
+        send_message = args[5];
     }
     await enqueueRequest(searchMultipleDestination, args, args[1].chat.id, args[2], send_message);
 }
