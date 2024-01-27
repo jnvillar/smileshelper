@@ -524,9 +524,13 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
     if (isProcessing) {
         queue_size += 1;
     }
-
-    if (send_message) {
-        await bot.sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${(queue_size - 1) * rateLimitInterval / 1000} segundos`);
+    const now = Date.now();
+    let mustWait = 0
+    if (queue_size === 1 && (now - lastRequestTime < rateLimitInterval)) {
+        mustWait = 1
+    }
+    if (send_message && (mustWait || queue_size > 1)) {
+        await bot.sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${((queue_size - 1) * rateLimitInterval / 1000) + (mustWait * rateLimitInterval / 1000)} segundos`);
     }
 
     if (shouldProcessImmediately) {
@@ -546,7 +550,7 @@ async function processQueue() {
     }
 
     isProcessing = true;
-    const { requestFunction, args } = queue.shift();
+    const {requestFunction, args} = queue.shift();
 
     try {
         await requestFunction(...args);
