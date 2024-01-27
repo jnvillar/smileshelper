@@ -513,6 +513,7 @@ const queue = [];
 let isProcessing = false;
 const intervalInSeconds = 45
 const rateLimitInterval = intervalInSeconds * 1000;
+let lastRequestTime = 0; // Timestamp of the last processed request
 
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
     const shouldProcessImmediately = !isProcessing && queue.length === 0;
@@ -527,7 +528,6 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
         await bot.sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${(queue_size - 1) * rateLimitInterval / 1000} segundos`);
     }
 
-
     if (shouldProcessImmediately) {
         processQueue();
     }
@@ -538,20 +538,26 @@ async function processQueue() {
         return;
     }
 
+    const now = Date.now();
+    if (now - lastRequestTime < rateLimitInterval) {
+        return;
+    }
+
     isProcessing = true;
-    const {requestFunction, args} = queue.shift();
+    const { requestFunction, args } = queue.shift();
 
     try {
         await requestFunction(...args);
     } catch (error) {
         console.error("Error processing request:", error);
     } finally {
+        lastRequestTime = Date.now();
         isProcessing = false;
     }
 }
 
-// Start continuous processing
-setInterval(processQueue, rateLimitInterval);
+// Start continuous checking instead of continuous processing
+setInterval(processQueue, 1000); // Check the queue every second
 
 // Wrap your search functions for queueing
 async function searchMultipleDestinationWrapper(...args) {
