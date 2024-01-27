@@ -523,7 +523,10 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
         queue_size += 1;
     }
 
-    await args[2].sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${(queue_size - 1) * rateLimitInterval / 1000} segundos`);
+    if (send_message) {
+        await bot.sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${(queue_size - 1) * rateLimitInterval / 1000} segundos`);
+    }
+
 
     if (shouldProcessImmediately) {
         processQueue();
