@@ -515,6 +515,7 @@ const intervalInSeconds = 60;
 const rateLimitInterval = intervalInSeconds * 1000;
 let lastRequestTime = 0; // Timestamp of the last processed request
 
+
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
     const shouldProcessImmediately = !isProcessing && queue.length === 0;
     queue.push({requestFunction, args});
