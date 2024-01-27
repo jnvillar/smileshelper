@@ -511,7 +511,7 @@ listen();
 
 const queue = [];
 let isProcessing = false;
-const intervalInSeconds = 20
+const intervalInSeconds = 30
 const rateLimitInterval = intervalInSeconds * 1000;
 
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
