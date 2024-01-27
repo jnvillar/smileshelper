@@ -27,6 +27,7 @@ const createAxiosClient = (baseURL) => {
     const client = axios.create({
         baseURL,
         insecureHTTPParser: true,
+        timeout: 20000, // Setting timeout to 10 seconds
     });
 
     client.interceptors.request.use(config => {

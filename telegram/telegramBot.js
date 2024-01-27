@@ -529,11 +529,12 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
     }
 
     if (shouldProcessImmediately) {
-        processQueue();
+        await processQueue();
     }
 }
 
 async function processQueue() {
+
     if (isProcessing || queue.length === 0) {
         return;
     }
@@ -565,7 +566,7 @@ async function searchMultipleDestinationWrapper(...args) {
     if (args.length >= 5) {
         send_message = args[4];
     }
-    enqueueRequest(searchMultipleDestination, args, args[1].chat.id, args[2], send_message);
+    await enqueueRequest(searchMultipleDestination, args, args[1].chat.id, args[2], send_message);
 }
 
 async function searchSingleDestinationWrapper(...args) {
@@ -573,5 +574,5 @@ async function searchSingleDestinationWrapper(...args) {
     if (args.length >= 4) {
         send_message = args[3];
     }
-    enqueueRequest(searchSingleDestination, args, args[1].chat.id, args[2], send_message);
+    await enqueueRequest(searchSingleDestination, args, args[1].chat.id, args[2], send_message);
 }
