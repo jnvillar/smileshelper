@@ -25,7 +25,7 @@ const genericError =
 const retry = (attempt) =>
     `Error al consultar en smiles. Reintento numero ${attempt}/3`;
 
-const searching = emoji.get("mag_right") + " Buscando las mejores ofertas...";
+const searching =  "Buscando las mejores ofertas...";
 
 const cafecito = `Si te ayudé a encontrar tu vuelo ideal y te gustaría contribuir al proyecto de Smiles Helper, podés donar en este link de [Cafecito](https://cafecito.app/juandambrosio)\\. Muchas gracias\\!`;
 

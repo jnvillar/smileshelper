@@ -2,6 +2,7 @@ const {monthSections, searching} = require("../config/constants");
 const {buildError} = require("../utils/error");
 const {padMonth} = require("../utils/string");
 const {searchCityQuery, searchRegionalQuery} = require("./search");
+const emoji = require("node-emoji");
 
 const sendMessageInChunks = async (search, bot, chatId, response, inlineKeyboardMonths) => {
     if (!response) return;
@@ -36,7 +37,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true) => 
 
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, `${match[0]}: ${searching}`)
+        bot.sendMessage(chatId, `${emoji.get("mag_right")} ${match[0]}: ${searching}`)
     }
 
     try {
@@ -60,7 +61,7 @@ const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOr
     console.log(`${new Date().toLocaleTimeString()} ${msg.chat.username} ${match[0]}`);
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, `${match[0]}: ${searching}`);
+        bot.sendMessage(chatId, `${emoji.get("mag_right")} ${emoji.get("mag_right")} ${match[0]}: ${searching}`);
     }
 
     try {
