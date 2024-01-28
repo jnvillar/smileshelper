@@ -15,7 +15,7 @@ const sendMessageInChunks = async (search, bot, chatId, response, inlineKeyboard
     }
 
     if (lines.length > 1) {
-        lines[0] = `✅ ${search[0]}: ${lines.length - 2} resultados`;
+        lines[0] = `✅ La búsqueda: ${search[0]} tuvo ${lines.length - 2} resultados`;
     }
 
     let results = [];
