@@ -556,7 +556,7 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
 
     if (send_message && (mustWait || queue_size > 1)) {
         let estimated_time = (queue_size - 1) * rateLimitInterval / 1000
-        if (lastRequestTime === 0) {
+        if (isProcessing) {
             estimated_time += intervalInSeconds
         } else {
             estimated_time += (now - lastRequestTime) / 1000
