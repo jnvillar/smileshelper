@@ -543,12 +543,11 @@ let isProcessing = false;
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
     queue.push({requestFunction, args});
     const queue_size = queue.length;
-
     const processNow = Date.now() - lastRequestTime < rateLimitInterval
 
     if (!processNow && send_message) {
         let estimated_time = (queue_size - 1) * rateLimitInterval / 1000
-        estimated_time += Math.min((Math.abs(intervalInSeconds - (Date.now() - lastRequestTime))) / 1000, intervalInSeconds)
+        estimated_time += intervalInSeconds - Math.min((Math.abs(intervalInSeconds - (Date.now() - lastRequestTime))) / 1000, intervalInSeconds)
         await bot.sendMessage(chat_id, `La búsqueda ${args[0][0]} fue encolada. Posición en la cola: ${queue_size}. Demora estimada: ${estimated_time} segundos`);
     }
 }
