@@ -61,7 +61,7 @@ const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOr
     console.log(`${new Date().toLocaleTimeString()} ${msg.chat.username} ${match[0]}`);
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, `🔎 Buscando vuelos para: *${match[0]}*`);
+        bot.sendMessage(chatId, `🔎 Buscando vuelos para: *${match[0]}*`, {parse_mode: "Markdown"});
     }
 
     try {
