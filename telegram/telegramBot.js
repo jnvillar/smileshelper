@@ -534,7 +534,6 @@ process.env.TZ = 'America/Argentina/Buenos_Aires'
 listen();
 
 const queue = [];
-let isProcessing = false;
 const intervalInSeconds = 31;
 const rateLimitInterval = intervalInSeconds * 1000;
 let lastRequestTime = 0; // Timestamp of the last processed request
@@ -542,35 +541,20 @@ let lastRequestTime = 0; // Timestamp of the last processed request
 
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
     queue.push({requestFunction, args});
+    const queue_size = queue.length;
 
-    let queue_size = queue.length;
-    if (isProcessing) {
-        queue_size += 1;
-    }
-    const now = Date.now();
-    let mustWait = false
-    if (queue_size === 1 && (now - lastRequestTime < rateLimitInterval)) {
-        mustWait = true
-    }
-
-    if (send_message && (mustWait || queue_size > 1)) {
+    if (queue_size > 1) {
         let estimated_time = (queue_size - 1) * rateLimitInterval / 1000
-        if (isProcessing) {
-            estimated_time += intervalInSeconds
-        } else {
-            estimated_time += (now - lastRequestTime) / 1000
-        }
-
+        estimated_time += Math.min((Date.now() - lastRequestTime) / 1000, 30)
         await bot.sendMessage(chat_id, `La búsqueda ${args[0][0]} fue encolada. Posición en la cola: ${queue_size}. Demora estimada: ${estimated_time} segundos`);
     }
-
 
     await processQueue();
 }
 
 async function processQueue() {
 
-    if (isProcessing || queue.length === 0) {
+    if (queue.length === 0) {
         return;
     }
 
@@ -579,8 +563,7 @@ async function processQueue() {
         return;
     }
 
-    isProcessing = true;
-    const {requestFunction, args} = queue.shift();
+    const {requestFunction, args} = queue[0];
 
     try {
         await requestFunction(...args);
@@ -588,7 +571,7 @@ async function processQueue() {
         console.error("Error processing request:", error);
     } finally {
         lastRequestTime = Date.now();
-        isProcessing = false;
+        queue.shift()
     }
 }
 
