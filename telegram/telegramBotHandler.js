@@ -37,7 +37,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true) => 
 
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, `🔎 Buscando vuelos para: *${match[0]}*`)
+        bot.sendMessage(chatId, `🔎 Buscando vuelos para: *${match[0]}*`, {parse_mode: "Markdown"})
     }
 
     try {
