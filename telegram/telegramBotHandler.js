@@ -10,11 +10,11 @@ const sendMessageInChunks = async (search, bot, chatId, response, inlineKeyboard
     const lines = response.split("\n");
 
     if (lines.length === 1) {
-        lines[0] = `${search[0]}: ${lines[0]}`;
+        lines[0] = `❌ ${search[0]}: ${lines[0]}`;
     }
 
     if (lines.length > 1) {
-        lines[0] = `${search[0]}: ${lines.length - 2} resultados`;
+        lines[0] = `✅ ${search[0]}: ${lines.length - 2} resultados`;
     }
 
     let results = [];
