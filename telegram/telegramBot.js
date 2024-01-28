@@ -546,7 +546,6 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
     if (send_message) {
         let queue_size = queue.length - 1;
         let estimated_time = queue_size * rateLimitInterval / 1000
-        estimated_time += intervalInSeconds - Math.min((Date.now() - lastRequestTime) / 1000, intervalInSeconds)
         await bot.sendMessage(chat_id, `La búsqueda ${args[0][0]} fue encolada. Posición en la cola: ${queue_size}. Demora estimada: ${estimated_time} segundos`);
     }
 }
@@ -561,11 +560,11 @@ async function processQueue() {
     const {requestFunction, args} = queue[0];
 
     try {
-        lastRequestTime = Date.now();
         await requestFunction(...args);
     } catch (error) {
         console.error("Error processing request:", error);
     } finally {
+        lastRequestTime = Date.now();
         queue.shift()
         isProcessing = false;
     }
