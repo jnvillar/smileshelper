@@ -541,7 +541,6 @@ let lastRequestTime = 0; // Timestamp of the last processed request
 
 
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
-    const shouldProcessImmediately = !isProcessing && queue.length === 0;
     queue.push({requestFunction, args});
 
     let queue_size = queue.length;
@@ -565,9 +564,8 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
         await bot.sendMessage(chat_id, `La búsqueda ${args[0][0]} fue encolada. Posición en la cola: ${queue_size}. Demora estimada: ${estimated_time} segundos`);
     }
 
-    if (shouldProcessImmediately) {
-        await processQueue();
-    }
+
+    await processQueue();
 }
 
 async function processQueue() {
