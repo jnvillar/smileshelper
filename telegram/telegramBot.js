@@ -537,6 +537,7 @@ const queue = [];
 const intervalInSeconds = 31;
 const rateLimitInterval = intervalInSeconds * 1000;
 let lastRequestTime = 0; // Timestamp of the last processed request
+let isProcessing = false;
 
 
 async function enqueueRequest(requestFunction, args, chat_id, bot, send_message) {
@@ -552,7 +553,7 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
 
 async function processQueue() {
 
-    if (queue.length === 0) {
+    if (isProcessing || queue.length === 0) {
         return;
     }
 
@@ -561,6 +562,7 @@ async function processQueue() {
         return;
     }
 
+    isProcessing = true;
     const {requestFunction, args} = queue[0];
 
     try {
@@ -570,6 +572,7 @@ async function processQueue() {
     } finally {
         lastRequestTime = Date.now();
         queue.shift()
+        isProcessing = false;
     }
 }
 
