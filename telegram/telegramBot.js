@@ -548,8 +548,6 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
         estimated_time += Math.min((Date.now() - lastRequestTime) / 1000, 30)
         await bot.sendMessage(chat_id, `La búsqueda ${args[0][0]} fue encolada. Posición en la cola: ${queue_size}. Demora estimada: ${estimated_time} segundos`);
     }
-
-    await processQueue();
 }
 
 async function processQueue() {
@@ -576,7 +574,7 @@ async function processQueue() {
 }
 
 // Start continuous checking instead of continuous processing
-setInterval(processQueue, 1000); // Check the queue every second
+setInterval(processQueue, 500); // Check the queue every second
 
 // Wrap your search functions for queueing
 async function searchMultipleDestinationWrapper(...args) {
