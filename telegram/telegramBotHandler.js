@@ -15,7 +15,7 @@ const sendMessageInChunks = async (search, bot, chatId, response, inlineKeyboard
     }
 
     if (lines.length > 1) {
-        lines[0] = `✅ La búsqueda: **${search[0]}** tuvo ${lines.length - 2} resultados`;
+        lines[0] = `✅ La búsqueda: *${search[0]}* tuvo ${lines.length - 2} resultados`;
     }
 
     let results = [];
@@ -37,7 +37,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true) => 
 
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, `🔎 Buscando vuelos para: **${match[0]}**`)
+        bot.sendMessage(chatId, `🔎 Buscando vuelos para: *${match[0]}*`)
     }
 
     try {
@@ -61,7 +61,7 @@ const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOr
     console.log(`${new Date().toLocaleTimeString()} ${msg.chat.username} ${match[0]}`);
     const chatId = msg.chat.id;
     if (send_message) {
-        bot.sendMessage(chatId, `🔎 Buscando vuelos para: **${match[0]}**`);
+        bot.sendMessage(chatId, `🔎 Buscando vuelos para: *${match[0]}*`);
     }
 
     try {
