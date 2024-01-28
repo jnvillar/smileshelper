@@ -157,24 +157,31 @@ async function loadAlert(bot, alert, just_created = false) {
     }
 
     cron.schedule(alert.cron, async () => {
-        try {
-            const {res, groups} = await handleSearch(searchText, msg, bot, false);
-            if (!res) return;
-
-            const saved_alert = await findAlert(alert);
-            const send_alert = shouldSendAlert(saved_alert.alert.previous_result, res)
-            await updateAlert(alert, res, send_alert); // always update alert with the latest result
-
-            // if saved alert did not have a previous result or diff was not found , return
-            if (saved_alert.alert.previous_result == null || !send_alert) return;
-
-            console.log(`sending alert ${alert.search} to ${alert.username}`)
-            await bot.sendMessage(alert.chat_id, `alert: ${alert.search} podría haber bajado de precio`);
-            await sendMessageInChunks(bot, alert.chat_id, res, getInlineKeyboardMonths(groups));
-        } catch (e) {
-            console.log(`error running alert: ${e.message}`);
-        }
+        await runAlert(bot, alert);
     });
+}
+
+async function runAlert(bot, alert, send_message = false) {
+    try {
+        const msg = {"chat": {"id": alert.chat_id, "username": `alert: ${alert.username}`}};
+        const searchText = alert.search;
+
+        const {res, groups} = await handleSearch(searchText, msg, bot, send_message);
+        if (!res) return;
+
+        const saved_alert = await findAlert(alert);
+        const send_alert = shouldSendAlert(saved_alert.alert.previous_result, res)
+        await updateAlert(alert, res, send_alert); // always update alert with the latest result
+
+        // if saved alert did not have a previous result or diff was not found , return
+        if (saved_alert.alert.previous_result == null || !send_alert) return;
+
+        console.log(`sending alert ${alert.search} to ${alert.username}`)
+        await bot.sendMessage(alert.chat_id, `alert: ${alert.search} podría haber bajado de precio`);
+        await sendMessageInChunks(bot, alert.chat_id, res, getInlineKeyboardMonths(groups));
+    } catch (e) {
+        console.log(`error running alert: ${e.message}`);
+    }
 }
 
 function shouldSendAlert(previous_result, new_result) {
@@ -261,6 +268,7 @@ const listen = async () => {
         {command: '/agregaralerta', description: 'agrega alerta: /agregaralerta BUE MIA 2024-05'},
         {command: '/eliminaralerta', description: 'elimina alerta: /eliminaralerta BUE MIA 2024-05'},
         {command: '/veralertas', description: 'lista alertas: /veralertas'},
+        {command: '/correralertas', description: 'corre alertas: /correralertas'},
         // Add more commands as needed
     ]);
 
@@ -507,6 +515,19 @@ const listen = async () => {
         }
 
     })
+
+    bot.onText(/\/correralertas/, async (msg) => {
+        const chatId = msg.chat.id;
+        const alerts = await getAlerts(msg)
+        if (alerts.length === 0) {
+            bot.sendMessage(chatId, "No hay alertas");
+            return
+        }
+
+        for (const alert of alerts) {
+            runAlert(bot, alert, true)
+        }
+    })
 };
 
 process.env.TZ = 'America/Argentina/Buenos_Aires'
@@ -533,7 +554,7 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
         mustWait = true
     }
     if (send_message && (mustWait || queue_size > 1)) {
-        await bot.sendMessage(chat_id, `La búsqueda fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${((queue_size) * rateLimitInterval / 1000)} segundos`);
+        await bot.sendMessage(chat_id, `La búsqueda ${args[0][0]} fue encolada. Posición en la cola: ${queue_size}. Tiempo estimado: ${((queue_size) * rateLimitInterval / 1000)} segundos`);
     }
 
     if (shouldProcessImmediately) {
