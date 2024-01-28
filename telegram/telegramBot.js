@@ -553,12 +553,7 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
 
 async function processQueue() {
 
-    if (isProcessing || queue.length === 0) {
-        return;
-    }
-
-    const now = Date.now();
-    if (now - lastRequestTime < rateLimitInterval) {
+    if (isProcessing || queue.length === 0 || Date.now() - lastRequestTime < rateLimitInterval) {
         return;
     }
 
