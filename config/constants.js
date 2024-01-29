@@ -1,4 +1,3 @@
-const emoji = require("node-emoji");
 const {padMonth} = require('../utils/string');
 
 

@@ -7,42 +7,63 @@ const {getBestFlight} = require('../utils/calculate');
 const {sortFlights, sortFlightsRoundTrip} = require('../flightsHelper');
 const {belongsToCity} = require('../utils/parser');
 
-const headers = {
-    authorization: `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`,
-    'x-api-key': smiles.apiKey,
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    region: 'ARGENTINA',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
-};
+const taxHeaders = {
+    'authority': 'api-airlines-boarding-tax-prd.smiles.com.br',
+}
+
+const flightsHeaders = {
+    'authority': 'api-air-flightsearch-prd.smiles.com.br'
+}
 
 const user_agents = [
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Linux; Android 13; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
     'Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
     'Mozilla/5.0 (iPhone14,6; U; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/19E241 Safari/602.1'
 ]
 
-const createAxiosClient = (baseURL) => {
+const createAxiosClient = (baseURL, headers) => {
     const client = axios.create({
-        baseURL,
+        baseURL: baseURL,
+        headers,
         insecureHTTPParser: true,
-        timeout: 30000,
     });
 
     client.interceptors.request.use(config => {
-        // Rotate the authorization token and keep other headers constant
+
         auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`
+        userAgent = user_agents[Math.floor(Math.random() * user_agents.length)]
         config.headers = {
-            ...config.headers,
-            authorization: `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`,
-            'x-api-key': smiles.apiKey,
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            region: 'ARGENTINA',
-            'user-agent': user_agents[Math.floor(Math.random() * user_agents.length)],
-            channel: 'Web',
+            ...headers,
+            'Accept': "application/json, text/plain, */*",
+            'Accept-Language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
+            'Authorization': `Bearer ${auth}`,
+            'Cache-Control': "no-cache",
+            'Channel': "Web",
+            'Language': "es-ES",
+            'Origin': "https://www.smiles.com.ar",
+            'Pragma': "no-cache",
+            'Referer': "https://www.smiles.com.ar/",
+            'Region': "ARGENTINA",
+            'Sec-Ch-Ua': `"Not A(Brand";v="99", "Brave";v="121", "Chromium";v="121"`,
+            'Sec-Ch-Ua-Mobile': "?0",
+            'Sec-Ch-Ua-Platform': `"macOS"`,
+            'Sec-Fetch-Dest': "empty",
+            'Sec-Fetch-Mode': "cors",
+            'Sec-Fetch-Site': "cross-site",
+            'Sec-Gpc': "1",
+            'User-Agent': userAgent,
+            'X-Api-Key': smiles.apiKey,
+            'Accept-Encoding': 'gzip, deflate, br'
         };
+
+        const headersToRemove = ['X-Requested-With', 'XMLHttpRequest', 'common', 'delete', 'get', 'head', 'post', 'put', 'patch']
+
+        headersToRemove.forEach(header => {
+            delete config.headers[header];
+        });
+
         return config;
     });
 
@@ -50,8 +71,8 @@ const createAxiosClient = (baseURL) => {
 };
 
 
-const smilesClient = createAxiosClient(SMILES_URL);
-const smilesTaxClient = createAxiosClient(SMILES_TAX_URL);
+const smilesClient = createAxiosClient(SMILES_URL, flightsHeaders);
+const smilesTaxClient = createAxiosClient(SMILES_TAX_URL, taxHeaders);
 
 const handleError = (error, id) => {
     const errorDetails = {
@@ -163,7 +184,6 @@ const getFlights = async (parameters) => {
     const getFlightPromises = [];
     const startDateFinal = parseInt(startDate > 0 ? startDate : calculateFirstDay(departureDate));
     const endDateFinal = parseInt(endDate > 0 ? endDate : lastDayOfMonthDeparture);
-
 
 
     for (let day = startDateFinal; day <= endDateFinal; day++) {
@@ -292,7 +312,7 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
     };
 
     try {
-        const {data} = await smilesTaxClient.get("/boardingtax", {params});
+        const {data} = await smilesTaxClient.get("/boardingtax", {params})
         const milesNumber = data?.totals?.totalBoardingTax?.miles;
         const moneyNumber = data?.totals?.totalBoardingTax?.money;
         return {
