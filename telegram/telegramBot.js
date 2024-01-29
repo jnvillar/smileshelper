@@ -546,6 +546,9 @@ async function enqueueRequest(requestFunction, args, chat_id, bot, send_message)
     if (send_message) {
         let queue_size = queue.length - 1;
         let estimated_time = queue_size * rateLimitInterval / 1000
+        if(Date.now() - lastRequestTime < rateLimitInterval){
+            estimated_time += Math.ceil(Date.now() - lastRequestTime) / 1000)
+        }
         await bot.sendMessage(chat_id, `🔎 La búsqueda: *${args[0][0]}* fue encolada.\n👥 Posición en la cola: ${queue_size}.\n⏳ Demora estimada: ${estimated_time} segundos.`, {parse_mode: "Markdown"});
     }
 }
