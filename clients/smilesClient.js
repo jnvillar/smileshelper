@@ -13,7 +13,8 @@ const taxHeaders = {
 }
 
 const flightsHeaders = {
-    'authority': 'api-air-flightsearch-prd.smiles.com.br'
+    'authority': 'api-air-flightsearch-prd.smiles.com.br',
+    'Accept-Encoding': 'gzip, deflate, br'
 }
 
 const user_agents = [
