@@ -9,6 +9,7 @@ const {belongsToCity} = require('../utils/parser');
 
 const taxHeaders = {
     'authority': 'api-airlines-boarding-tax-prd.smiles.com.br',
+    'Accept-Encoding': 'gzip, deflate, br'
 }
 
 const flightsHeaders = {
@@ -55,7 +56,6 @@ const createAxiosClient = (baseURL, headers) => {
             'Sec-Gpc': "1",
             'User-Agent': userAgent,
             'X-Api-Key': smiles.apiKey,
-            'Accept-Encoding': 'gzip, deflate, br'
         };
 
         const headersToRemove = ['X-Requested-With', 'XMLHttpRequest', 'common', 'delete', 'get', 'head', 'post', 'put', 'patch']
