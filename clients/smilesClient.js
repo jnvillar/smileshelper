@@ -40,7 +40,8 @@ const createAxiosClient = (baseURL) => {
             'Content-Type': 'application/json',
             Accept: 'application/json',
             region: 'ARGENTINA',
-            'User-Agent': user_agents[Math.floor(Math.random() * user_agents.length)]
+            'user-agent': user_agents[Math.floor(Math.random() * user_agents.length)],
+            channel: 'Web',
         };
         return config;
     });
