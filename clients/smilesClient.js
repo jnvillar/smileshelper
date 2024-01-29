@@ -85,17 +85,6 @@ const handleError = (error, id) => {
     return {data: {requestedFlightSegmentList: [{flightList: []}]}};
 };
 
-
-const handleErrorForTax = (error, id) => {
-    const errorDetails = {
-        message: error.message,
-        code: error.code,
-        config: error.config,
-    };
-    console.error(`could not get tax of ${id}:`, JSON.stringify(errorDetails));
-    return undefined
-};
-
 const API_FAILURE_RETRY_CODES = ["ETIMEDOUT", "EAI_AGAIN", "ECONNRESET", "ERR_BAD_RESPONSE"];
 const FLIGHT_LIST_ERRORS = [
     "TypeError: Cannot read properties of undefined (reading 'flightList')",
@@ -327,7 +316,7 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
             message: error.message,
             code: error.code
         }));
-        return {miles: 0};
+        return undefined
     }
 };
 
