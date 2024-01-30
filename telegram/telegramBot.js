@@ -262,7 +262,7 @@ const listen = async () => {
         {command: '/links', description: 'lista links utiles: /links'},
         {command: '/aerolineas', description: 'lista codigos de aerolineas: /aerolineas'},
         {command: '/filtros', description: 'lista filtros: /filtros'},
-        {command: '/filtroseliminar', description: 'elimina todos los filtros, crons y alertas: /filtroseliminar'},
+        {command: '/filtroseliminar', description: 'elimina todos los filtros: /filtroseliminar'},
         {command: '/vercrons', description: 'lista crons: /vercrons'},
         {command: '/agregarcron', description: 'agrega cron: /agregarcron 12 30 BUE MIA 2024-05'},
         {command: '/agregaralerta', description: 'agrega alerta: /agregaralerta BUE MIA 2024-05'},
