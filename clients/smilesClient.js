@@ -187,7 +187,6 @@ const getFlights = async (parameters) => {
     )
         .filter(flight => validFlight(flight));
 
-    console.log(`search success ${origin} ${destination} ${departureDate}`);
     return {
         results: sortFlights(mappedFlightResults).slice(0, getBestFlightsCount(preferences?.maxresults)),
         departureMonth: departureDate.substring(5, 7),
@@ -219,7 +218,6 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
     )
         .filter(flight => validFlight(flight));
 
-    console.log(`search success ${origin} ${destination} ${departureDate}`);
     return {
         results: sortFlights(mappedFlightResults.flat()).slice(0, getBestFlightsCount(preferences?.maxresults)),
     };
