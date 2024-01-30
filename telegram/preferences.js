@@ -291,7 +291,7 @@ const createCron = async (msg, croncmd, cmd) => {
 };
 
 const deletePreferences = async (msg) => {
-    const {getOne} = getDbFunctions();
+    const {getOne, deleteOne} = getDbFunctions();
 
     try {
         const previousPreferences = await getPreferencesDb({id: msg.chat.id}, getOne);
@@ -299,6 +299,7 @@ const deletePreferences = async (msg) => {
             alerts: previousPreferences.alerts || [],
             crons: previousPreferences.crons || [],
         };
+        await deleteOne({author_id: msg.chat.id});
         await savePreferences(msg, res);
         return {response: preferencesDelete};
     } catch (error) {
