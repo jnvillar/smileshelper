@@ -284,7 +284,7 @@ const buildParams = (
     infants: "0",
     isFlexibleDateChecked: "false",
     tripType: tripTypes.ONE_WAY,
-    forceCongener: "false",
+    forceCongener: "true",
     r: "ar",
     originAirportCode: origin,
     destinationAirportCode: destination,
