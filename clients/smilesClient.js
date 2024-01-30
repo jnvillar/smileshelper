@@ -176,9 +176,8 @@ const getFlights = async (parameters) => {
     const endDateFinal = parseInt(endDate > 0 ? endDate : lastDayOfMonthDeparture);
 
 
-
     for (let day = startDateFinal; day <= endDateFinal; day++) {
-        const params = buildParams(origin, destination, departureDate.replace("/", "-"), adults, false, day, (preferences?.brasilNonGol !== false) ? "true" : "false");
+        const params = buildParams(origin, destination, departureDate.replace("/", "-"), adults, false, day, preferences?.brasilNonGol);
         getFlightPromises.push(searchFlights(params));
     }
 
@@ -209,7 +208,7 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
 
     for (const city of multipleCity) {
         for (let day = startDateFinal; day <= endDateFinal; day++) {
-            const params = buildParams(isMultipleOrigin ? city : origin, isMultipleOrigin ? destination : city, departureDate.replace("/", "-"), adults, fixedDay, fixedDay ? undefined : day, (preferences?.brasilNonGol !== false) ? "true" : "false");
+            const params = buildParams(isMultipleOrigin ? city : origin, isMultipleOrigin ? destination : city, departureDate.replace("/", "-"), adults, fixedDay, fixedDay ? undefined : day, preferences?.brasilNonGol);
             getFlightPromises.push(searchFlights(params));
         }
     }
@@ -247,12 +246,12 @@ const getFlightsRoundTrip = async (parameters) => {
     firstReturnDate.setDate(firstReturnDate.getDate() + minDays);
 
     for (let date = new Date(departureDate); date <= lastDepartureDate; date.setDate(date.getDate() + 1)) {
-        const paramsGoing = buildParams(origin, destination, date.toLocaleDateString("fr-CA"), adultsGoing, true, undefined, (preferences?.brasilNonGol !== false) ? "true" : "false");
+        const paramsGoing = buildParams(origin, destination, date.toLocaleDateString("fr-CA"), adultsGoing, true, undefined, preferences?.brasilNonGol);
         getFlightPromises.push(searchFlights(paramsGoing));
     }
 
     for (let dateReturn = firstReturnDate; dateReturn <= new Date(returnDate); dateReturn.setDate(dateReturn.getDate() + 1)) {
-        const paramsComing = buildParams(destination, origin, dateReturn.toLocaleDateString("fr-CA"), adultsComing, true, undefined, (preferences?.brasilNonGol !== false) ? "true" : "false");
+        const paramsComing = buildParams(destination, origin, dateReturn.toLocaleDateString("fr-CA"), adultsComing, true, undefined, preferences?.brasilNonGol);
         getFlightPromises.push(searchFlights(paramsComing));
     }
 
@@ -275,23 +274,30 @@ const buildParams = (
     adults,
     fixedDay,
     specificDay,
-    brasilNonGol = "true"
-) => ({
-    adults: adults || "1",
-    cabinType: "all",
-    children: "0",
-    currencyCode: "ARS",
-    infants: "0",
-    isFlexibleDateChecked: "false",
-    tripType: tripTypes.ONE_WAY,
-    forceCongener: "true",
-    r: "ar",
-    originAirportCode: origin,
-    destinationAirportCode: destination,
-    departureDate: fixedDay
-        ? departureDate
-        : parseDate(departureDate, specificDay),
-});
+    brasilNonGol
+) => {
+    let forceCongener = "true";
+    if (brasilNonGol !== undefined) {
+        forceCongener = brasilNonGol ? "true" : "false";
+    }
+
+    return {
+        adults: adults || "1",
+        cabinType: "all",
+        children: "0",
+        currencyCode: "ARS",
+        infants: "0",
+        isFlexibleDateChecked: "false",
+        tripType: tripTypes.ONE_WAY,
+        forceCongener: forceCongener,
+        r: "ar",
+        originAirportCode: origin,
+        destinationAirportCode: destination,
+        departureDate: fixedDay
+            ? departureDate
+            : parseDate(departureDate, specificDay),
+    }
+};
 
 const getTax = async (uid, fareuid, isSmilesMoney) => {
     const params = {
