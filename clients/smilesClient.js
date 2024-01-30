@@ -14,7 +14,7 @@ const taxHeaders = {
 
 const flightsHeaders = {
     'authority': 'api-air-flightsearch-prd.smiles.com.br',
-    'Accept-Encoding': 'gzip, deflate, br'
+    //'Accept-Encoding': 'gzip, deflate, br'
 }
 
 const user_agents = [
@@ -29,8 +29,7 @@ const createAxiosClient = (baseURL, headers) => {
     const client = axios.create({
         baseURL: baseURL,
         headers,
-        insecureHTTPParser: true,
-        timeout: 30 * 1000,
+        insecureHTTPParser: true
     });
 
     client.interceptors.request.use(config => {
@@ -177,8 +176,9 @@ const getFlights = async (parameters) => {
     const endDateFinal = parseInt(endDate > 0 ? endDate : lastDayOfMonthDeparture);
 
 
+
     for (let day = startDateFinal; day <= endDateFinal; day++) {
-        const params = buildParams(origin, destination, departureDate.replace("/", "-"), adults, false, day, preferences?.brasilNonGol ? "true" : "false");
+        const params = buildParams(origin, destination, departureDate.replace("/", "-"), adults, false, day, (preferences?.brasilNonGol !== false) ? "true" : "false");
         getFlightPromises.push(searchFlights(params));
     }
 
@@ -188,6 +188,7 @@ const getFlights = async (parameters) => {
     )
         .filter(flight => validFlight(flight));
 
+    console.log(`search success ${origin} ${destination} ${departureDate}`);
     return {
         results: sortFlights(mappedFlightResults).slice(0, getBestFlightsCount(preferences?.maxresults)),
         departureMonth: departureDate.substring(5, 7),
@@ -208,7 +209,7 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
 
     for (const city of multipleCity) {
         for (let day = startDateFinal; day <= endDateFinal; day++) {
-            const params = buildParams(isMultipleOrigin ? city : origin, isMultipleOrigin ? destination : city, departureDate.replace("/", "-"), adults, fixedDay, fixedDay ? undefined : day, preferences?.brasilNonGol ? "true" : "false");
+            const params = buildParams(isMultipleOrigin ? city : origin, isMultipleOrigin ? destination : city, departureDate.replace("/", "-"), adults, fixedDay, fixedDay ? undefined : day, (preferences?.brasilNonGol !== false) ? "true" : "false");
             getFlightPromises.push(searchFlights(params));
         }
     }
@@ -219,6 +220,7 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
     )
         .filter(flight => validFlight(flight));
 
+    console.log(`search success ${origin} ${destination} ${departureDate}`);
     return {
         results: sortFlights(mappedFlightResults.flat()).slice(0, getBestFlightsCount(preferences?.maxresults)),
     };
@@ -245,12 +247,12 @@ const getFlightsRoundTrip = async (parameters) => {
     firstReturnDate.setDate(firstReturnDate.getDate() + minDays);
 
     for (let date = new Date(departureDate); date <= lastDepartureDate; date.setDate(date.getDate() + 1)) {
-        const paramsGoing = buildParams(origin, destination, date.toLocaleDateString("fr-CA"), adultsGoing, true, undefined, preferences?.brasilNonGol ? "true" : "false");
+        const paramsGoing = buildParams(origin, destination, date.toLocaleDateString("fr-CA"), adultsGoing, true, undefined, (preferences?.brasilNonGol !== false) ? "true" : "false");
         getFlightPromises.push(searchFlights(paramsGoing));
     }
 
     for (let dateReturn = firstReturnDate; dateReturn <= new Date(returnDate); dateReturn.setDate(dateReturn.getDate() + 1)) {
-        const paramsComing = buildParams(destination, origin, dateReturn.toLocaleDateString("fr-CA"), adultsComing, true, undefined, preferences?.brasilNonGol ? "true" : "false");
+        const paramsComing = buildParams(destination, origin, dateReturn.toLocaleDateString("fr-CA"), adultsComing, true, undefined, (preferences?.brasilNonGol !== false) ? "true" : "false");
         getFlightPromises.push(searchFlights(paramsComing));
     }
 
@@ -282,7 +284,7 @@ const buildParams = (
     infants: "0",
     isFlexibleDateChecked: "false",
     tripType: tripTypes.ONE_WAY,
-    forceCongener: brasilNonGol,
+    forceCongener: "false",
     r: "ar",
     originAirportCode: origin,
     destinationAirportCode: destination,
