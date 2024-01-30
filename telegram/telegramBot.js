@@ -509,7 +509,7 @@ const listen = async () => {
             return
         }
 
-        bot.sendMessage(chatId, "Lista de alertas");
+        await bot.sendMessage(chatId, "Lista de alertas");
         for (const alert of alerts) {
             bot.sendMessage(chatId, `${alert.search} - ${alert.cron}`);
         }
