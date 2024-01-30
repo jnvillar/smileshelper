@@ -29,7 +29,8 @@ const createAxiosClient = (baseURL, headers) => {
     const client = axios.create({
         baseURL: baseURL,
         headers,
-        insecureHTTPParser: true
+        insecureHTTPParser: true,
+        timeout: 30 * 1000
     });
 
     client.interceptors.request.use(config => {
