@@ -272,7 +272,7 @@ const buildParams = (
     adults,
     fixedDay,
     specificDay,
-    brasilNonGol = "false"
+    brasilNonGol = "true"
 ) => ({
     adults: adults || "1",
     cabinType: "all",
