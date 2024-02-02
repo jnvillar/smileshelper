@@ -293,8 +293,12 @@ const listen = async () => {
         // Add more commands as needed
     ]);
 
-    bot.onText(/\/start/, async (msg) =>
-        bot.sendMessage(msg.chat.id, telegramStart, {parse_mode: "MarkdownV2"})
+    bot.onText(/\/start/, async (msg) => {
+            if (!isUserAuthorized(bot, msg)) {
+                return
+            }
+            bot.sendMessage(msg.chat.id, telegramStart, {parse_mode: "MarkdownV2"})
+        }
     );
 
     bot.onText(/\/regiones/, async (msg) => {
