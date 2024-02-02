@@ -251,17 +251,17 @@ const getTelegramToken = () => {
 
 
 const authorizedUsers = [
-    379299692, // SANDRA
+    "379299692", // SANDRA
     "leisanchez",
     "colopreda",
-    "MatiCada",
+    "maticada",
     "juaninv"
 ];
 
 function isUserAuthorized(bot, msg) {
     const userId = msg.from.id;
     const username = msg.from.username;
-    const authorized = authorizedUsers.includes(userId) || authorizedUsers.includes(username);
+    const authorized = authorizedUsers.includes(userId.toString()) || authorizedUsers.includes(username.toLowerCase());
     if (!authorized) {
         console.log(`User ${userId} ${username} is not authorized to use the bot `)
         bot.sendMessage(userId, "👮 No estas autorizado a usar el bot");
