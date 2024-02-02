@@ -265,6 +265,7 @@ function isUserAuthorized(bot, msg) {
     if (!authorized) {
         console.log(`User ${userId} ${username} is not authorized to use the bot`)
         bot.sendMessage(userId, "No estas autorizado a usar el bot");
+        bot.sendMessage(183065878, `Uso no autorizado del bot  ${userId} ${username}`);
     }
     return authorized;
 }
