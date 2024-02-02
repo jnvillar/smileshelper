@@ -102,7 +102,6 @@ module.exports = {
     genericError,
     retry,
     searching,
-    cafecito,
     links,
     maxRetriesAlerts,
     delaySecondsRetriesAlerts,

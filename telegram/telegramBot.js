@@ -250,12 +250,20 @@ const getTelegramToken = () => {
 }
 
 
-const authorizedUsers = [1379299692, 1120013515, 83808435, 213084735, 183065878];
+const authorizedUsers = [
+    379299692, // SANDRA
+    "leisanchez",
+    "colopreda",
+    "MatiCada",
+    "juaninv"
+];
 
-function isUserAuthorized(bot, userId) {
-    const authorized = authorizedUsers.includes(userId);
+function isUserAuthorized(bot, msg) {
+    const userId = msg.from.id;
+    const username = msg.from.username;
+    const authorized = authorizedUsers.includes(userId) || authorizedUsers.includes(username);
     if (!authorized) {
-        console.log(`User ${userId} is not authorized to use the bot`)
+        console.log(`User ${userId} ${username} is not authorized to use the bot`)
         bot.sendMessage(userId, "No estas autorizado a usar el bot");
     }
     return authorized;
@@ -289,7 +297,7 @@ const listen = async () => {
     );
 
     bot.onText(/\/regiones/, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
 
@@ -305,7 +313,7 @@ const listen = async () => {
     });
 
     bot.onText(/\/links/, async (msg) => {
-            if (!isUserAuthorized(bot, msg.from.id)) {
+            if (!isUserAuthorized(bot, msg)) {
                 return
             }
             bot.sendMessage(msg.chat.id, links, {parse_mode: "MarkdownV2"})
@@ -313,7 +321,7 @@ const listen = async () => {
     );
 
     bot.onText(/\/aerolineas/, async (msg) => {
-            if (!isUserAuthorized(bot, msg.from.id)) {
+            if (!isUserAuthorized(bot, msg)) {
                 return
             }
             bot.sendMessage(msg.chat.id, airlinesCodes, {parse_mode: "MarkdownV2"})
@@ -321,42 +329,42 @@ const listen = async () => {
     );
 
     bot.onText(regexSingleCities, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         await searchSingleDestinationWrapper(match, msg, bot, true);
     });
 
     bot.onText(regexMultipleDestinationMonthly, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         await searchMultipleDestinationWrapper(match, msg, bot, false, false, true);
     });
 
     bot.onText(regexMultipleDestinationFixedDay, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         await searchMultipleDestinationWrapper(match, msg, bot, true, false, true);
     });
 
     bot.onText(regexMultipleOriginMonthly, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         await searchMultipleDestinationWrapper(match, msg, bot, false, true, true);
     });
 
     bot.onText(regexMultipleOriginFixedDay, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         await searchMultipleDestinationWrapper(match, msg, bot, true, true, true);
     });
 
     bot.onText(regexRoundTrip, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -370,7 +378,7 @@ const listen = async () => {
     });
 
     bot.on("callback_query", async (query) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const match = query.data.split(" ");
@@ -404,7 +412,7 @@ const listen = async () => {
     });
 
     bot.onText(regexFilters, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -425,7 +433,7 @@ const listen = async () => {
 
 
     bot.onText(regexCustomRegion, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -447,7 +455,7 @@ const listen = async () => {
     });
 
     bot.onText(/\/filtroseliminar/, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -461,7 +469,7 @@ const listen = async () => {
     });
 
     bot.onText(/\/filtros$/, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -474,7 +482,7 @@ const listen = async () => {
     });
 
     bot.onText(regexAlert, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -487,7 +495,7 @@ const listen = async () => {
     })
 
     bot.onText(regexDeleteAlert, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -507,7 +515,7 @@ const listen = async () => {
     })
 
     bot.onText(regexCron, async (msg, match) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -550,7 +558,7 @@ const listen = async () => {
     })
 
     bot.onText(/\/vercrons/, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -567,7 +575,7 @@ const listen = async () => {
     })
 
     bot.onText(/\/veralertas/, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
@@ -585,7 +593,7 @@ const listen = async () => {
     })
 
     bot.onText(/\/correralertas/, async (msg) => {
-        if (!isUserAuthorized(bot, msg.from.id)) {
+        if (!isUserAuthorized(bot, msg)) {
             return
         }
         const chatId = msg.chat.id;
