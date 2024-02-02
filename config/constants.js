@@ -26,8 +26,6 @@ const retry = (attempt) =>
 
 const searching =  "Buscando las mejores ofertas...";
 
-const cafecito = `Si te ayudé a encontrar tu vuelo ideal y te gustaría contribuir al proyecto de Smiles Helper, podés donar en este link de [Cafecito](https://cafecito.app/juandambrosio)\\. Muchas gracias\\!`;
-
 const links = `\\-[Grupo de Telegram sobre alerta de ofertas en Smiles](https://t.me/+FiKom9f1944xYzIx)\n\\-[Grupo de Telegram sobre consultas de Smiles](https://t.me/+3JRDTJIf2gM0YWE5)\n\\-[Guía completa sobre Smiles](https://elviajeroserial.com/smiles-argentina-manual-del-usuario-analisis-estrategias-y-todo-lo-que-necesitas-saber/)\n\\-[Video explicativo sobre el uso de Smiles Helper](https://twitter.com/chicodlasmillas/status/1572362460707037186)\n`;
 
 
