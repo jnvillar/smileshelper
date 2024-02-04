@@ -255,7 +255,8 @@ const authorizedUsers = [
     "leisanchez",
     "colopreda",
     "maticada",
-    "juaninv"
+    "juaninv",
+    "Julianherrera" // amigo nacho
 ];
 
 function isUserAuthorized(bot, msg) {
