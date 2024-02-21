@@ -115,29 +115,29 @@ async function loadCrons(msg, bot) {
 }
 
 
-async function handleSearch(searchText, msg, bot, send_message = true) {
+async function handleSearch(searchText, msg, bot, send_message = true, alert = null) {
     let res;
     let groups;
     switch (true) {
         case regexSingleCities.test(searchText):
             groups = regexSingleCities.exec(searchText);
-            res = await searchSingleDestinationWrapper(groups, msg, bot, send_message);
+            res = await searchSingleDestinationWrapper(groups, msg, bot, send_message, alert)
             break;
         case regexMultipleDestinationMonthly.test(searchText):
             groups = regexMultipleDestinationMonthly.exec(searchText);
-            res = await searchMultipleDestinationWrapper(groups, msg, bot, false, false, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, false, false, send_message, alert)
             break;
         case regexMultipleDestinationFixedDay.test(searchText):
             groups = regexMultipleDestinationFixedDay.exec(searchText);
-            res = await searchMultipleDestinationWrapper(groups, msg, bot, true, false, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, true, false, send_message, alert)
             break;
         case regexMultipleOriginMonthly.test(searchText):
             groups = regexMultipleOriginMonthly.exec(searchText);
-            res = await searchMultipleDestinationWrapper(groups, msg, bot, false, true, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, false, true, send_message, alert)
             break;
         case regexMultipleOriginFixedDay.test(searchText):
             groups = regexMultipleOriginFixedDay.exec(searchText);
-            res = await searchMultipleDestinationWrapper(groups, msg, bot, true, true, send_message);
+            res = await searchMultipleDestinationWrapper(groups, msg, bot, true, true, send_message, alert)
             break;
         default:
             console.log(`error: ${searchText} does not match any case`);
@@ -164,62 +164,12 @@ async function runAlert(bot, alert, send_message = false) {
     try {
         const msg = {"chat": {"id": alert.chat_id, "username": `alert: ${alert.username}`}};
         const searchText = alert.search;
-
-        const {res, groups} = await handleSearch(searchText, msg, bot, send_message);
-        if (!res) return;
-
-        const saved_alert = await findAlert(alert);
-        const send_alert = shouldSendAlert(saved_alert.alert.previous_result, res)
-        await updateAlert(alert, res, send_alert); // always update alert with the latest result
-
-        // if saved alert did not have a previous result or diff was not found , return
-        if (saved_alert.alert.previous_result == null || !send_alert) return;
-
-        console.log(`sending alert ${alert.search} to ${alert.username}`)
-        await bot.sendMessage(alert.chat_id, `alert: ${alert.search} podría haber bajado de precio`);
-        await sendMessageInChunks(bot, alert.chat_id, res, getInlineKeyboardMonths(groups));
+        await handleSearch(searchText, msg, bot, send_message, alert);
     } catch (e) {
         console.log(`error running alert: ${e.message}`);
     }
 }
 
-function shouldSendAlert(previous_result, new_result) {
-    try {
-        const previousMinPrice = getMinPrice(previous_result);
-        if (previousMinPrice === undefined) {
-            return true
-        }
-        const newMinPrice = getMinPrice(new_result);
-        console.log(`previousMinPrice: ${previousMinPrice} newMinPrice: ${newMinPrice}. Should send alert: ${newMinPrice < previousMinPrice}`)
-        return newMinPrice < previousMinPrice;
-    } catch (e) {
-        console.error("Error comparing alerts", e, previous_result, new_result);
-        return false;
-    }
-}
-
-function getMinPrice(text) {
-    // if text does not contains jumpline (\n) return undefined
-    if (!text.includes("\n")) return undefined;
-    const lines = text.split('\n').filter(line => line.trim() !== '');
-    let minPrice = lines.reduce((min, line) => {
-        const price = parsePrice(line);
-        return (price !== undefined) ? Math.min(min, price) : min;
-    }, Infinity);
-    return (minPrice !== Infinity) ? minPrice : undefined;
-}
-
-function parsePrice(text) {
-    const asteriskRegex = /\*([^\*]+)\*/;
-    const match = asteriskRegex.exec(text);
-    if (!match) return undefined;
-
-    const innerText = match[1];
-    const firstNumber = parseInt(innerText.match(/(\d+)/)?.[1] || 0, 10);
-    const numberWithK = parseInt(innerText.match(/(\d+)K/)?.[1] || 0, 10) * 1000;
-
-    return firstNumber + numberWithK;
-}
 
 // Refactored loadCron function
 async function loadCron(bot, c, just_created = false) {
@@ -665,16 +615,24 @@ setInterval(processQueue, 500); // Check the queue every second
 // Wrap your search functions for queueing
 async function searchMultipleDestinationWrapper(...args) {
     let send_message = true;
+    let alert = null;
     if (args.length >= 6) {
         send_message = args[5];
     }
-    await enqueueRequest(searchMultipleDestination, args, args[1].chat.id, args[2], send_message);
+    if (args.length >= 7) {
+        alert = args[6];
+    }
+    await enqueueRequest(searchMultipleDestination, args, args[1].chat.id, args[2], send_message, alert);
 }
 
 async function searchSingleDestinationWrapper(...args) {
     let send_message = true;
+    let alert = null;
     if (args.length >= 4) {
         send_message = args[3];
     }
-    await enqueueRequest(searchSingleDestination, args, args[1].chat.id, args[2], send_message);
+    if (args.length >= 5) {
+        alert = args[4];
+    }
+    await enqueueRequest(searchSingleDestination, args, args[1].chat.id, args[2], send_message, alert);
 }
