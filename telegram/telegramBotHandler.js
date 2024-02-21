@@ -130,7 +130,11 @@ function shouldSendAlert(previous_result, new_result) {
         const newMinPrice = getMinPrice(new_result);
         return newMinPrice < previousMinPrice;
     } catch (e) {
-        console.error("Error comparing alerts", e, previous_result, new_result);
+        console.error(`error comparing previous and new result`, {
+            previous_result: previous_result,
+            new_result: new_result,
+            error: e
+        })
         return false;
     }
 }
