@@ -73,7 +73,6 @@ const createAxiosClient = (baseURL, headers) => {
     return client;
 };
 
-
 const smilesClient = createAxiosClient(SMILES_URL, flightsHeaders);
 const smilesTaxClient = createAxiosClient(SMILES_TAX_URL, taxHeaders);
 
