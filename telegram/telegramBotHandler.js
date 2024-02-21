@@ -107,7 +107,6 @@ function getMinPrice(text) {
     }, Infinity);
     return (minPrice !== Infinity) ? minPrice : undefined;
 }
-
 function parsePrice(text) {
     const asteriskRegex = /\*([^\*]+)\*/;
     const match = asteriskRegex.exec(text);
@@ -119,7 +118,6 @@ function parsePrice(text) {
 
     return firstNumber + numberWithK;
 }
-
 
 function shouldSendAlert(previous_result, new_result) {
     try {
