@@ -190,6 +190,7 @@ function shouldSendAlert(previous_result, new_result) {
             return true
         }
         const newMinPrice = getMinPrice(new_result);
+        console.log(`previousMinPrice: ${previousMinPrice} newMinPrice: ${newMinPrice}. Should send alert: ${newMinPrice < previousMinPrice}`)
         return newMinPrice < previousMinPrice;
     } catch (e) {
         console.error("Error comparing alerts", e, previous_result, new_result);
