@@ -118,7 +118,6 @@ function parsePrice(text) {
 
     return firstNumber + numberWithK;
 }
-
 function shouldSendAlert(previous_result, new_result) {
     try {
         const previousMinPrice = getMinPrice(previous_result);
