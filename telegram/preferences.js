@@ -81,7 +81,6 @@ const setRegion = async (msg, name, airports) => {
         return {error: preferencesError};
     }
 };
-
 const findAlert = async (targetAlert) => {
     const {getOne} = getDbFunctions();
 
