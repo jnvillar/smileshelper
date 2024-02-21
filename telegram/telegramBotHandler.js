@@ -34,7 +34,7 @@ const sendMessageInChunks = async (search, bot, chatId, response, inlineKeyboard
 };
 
 const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOrigin, send_message = true, alert = null) => {
-    console.log(`${new Date().toLocaleTimeString()} ${msg.chat.username} ${match[0]}`);
+    console.log(`${new Date().toLocaleTimeString()} ${alert ? "alert" : ""} ${msg.chat.username} ${match[0]}`);
     const chatId = msg.chat.id;
     if (send_message) {
         bot.sendMessage(chatId, `🔎 Buscando vuelos para: *${match[0]}*`, {parse_mode: "Markdown"});
@@ -46,7 +46,7 @@ const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOr
             await sendMessageInChunks(match, bot, chatId, response, getInlineKeyboardMonths(match));
         }
         if (alert) {
-            await check_alert(response, match, bot, alert );
+            await check_alert(response, match, bot, alert);
         }
         return response
     } catch (error) {
@@ -57,7 +57,7 @@ const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOr
     }
 };
 const searchSingleDestination = async (match, msg, bot, send_message = true, alert = null) => {
-    console.log(`${new Date().toLocaleTimeString()} ${msg.chat.username} ${match[0]}`);
+    console.log(`${new Date().toLocaleTimeString()} ${alert ? "alert" : ""} ${msg.chat.username} ${match[0]}`);
 
     const chatId = msg.chat.id;
     if (send_message) {
@@ -72,7 +72,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true, ale
             await sendMessageInChunks(match, bot, chatId, response, inlineKeyboardMonths);
         }
         if (alert) {
-            await check_alert(response, match, bot, alert );
+            await check_alert(response, match, bot, alert);
         }
         return response
     } catch (error) {
@@ -135,6 +135,7 @@ function shouldSendAlert(previous_result, new_result) {
         return false;
     }
 }
+
 const getInlineKeyboardMonths = (match) => {
     const [, origin, destination] = match;
     return monthSections.map((section, sectionIndex) => section.map((month, monthIndex) => ({

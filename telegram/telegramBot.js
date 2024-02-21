@@ -51,8 +51,6 @@ const {initializeDbFunctions} = require("../db/dbFunctions");
 const {
     searchSingleDestination,
     searchMultipleDestination,
-    sendMessageInChunks,
-    getInlineKeyboardMonths,
 } = require("./telegramBotHandler");
 const {save} = require("node-cron/src/storage");
 
@@ -162,7 +160,7 @@ async function loadAlert(bot, alert, just_created = false) {
 
 async function runAlert(bot, alert, send_message = false) {
     try {
-        const msg = {"chat": {"id": alert.chat_id, "username": `alert: ${alert.username}`}};
+        const msg = {"chat": {"id": alert.chat_id, "username": `${alert.username}`}};
         const searchText = alert.search;
         await handleSearch(searchText, msg, bot, send_message, alert);
     } catch (e) {
