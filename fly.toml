@@ -1,16 +1,4 @@
-# fly.toml app configuration file generated for smiles on 2024-02-21T14:46:08-03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
-app = 'smiles'
-primary_region = 'sea'
-kill_signal = 'SIGINT'
-kill_timeout = '5s'
-
-[build]
-
-[deploy]
-
-[[vm]]
-  size = 'shared-cpu-1x'
+app = "smiles"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
