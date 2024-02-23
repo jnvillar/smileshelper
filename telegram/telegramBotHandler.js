@@ -46,7 +46,7 @@ const searchMultipleDestination = async (match, msg, bot, fixedDay, isMultipleOr
             await sendMessageInChunks(match, bot, chatId, response, getInlineKeyboardMonths(match));
         }
         if (alert) {
-            await check_alert(response, match, bot, alert);
+            await maybe_send_alert(response, match, bot, alert);
         }
         return response
     } catch (error) {
@@ -72,7 +72,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true, ale
             await sendMessageInChunks(match, bot, chatId, response, inlineKeyboardMonths);
         }
         if (alert) {
-            await check_alert(response, match, bot, alert);
+            await maybe_send_alert(response, match, bot, alert);
         }
         return response
     } catch (error) {
@@ -84,7 +84,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true, ale
     }
 }
 
-const check_alert = async (res, match, bot, alert) => {
+const maybe_send_alert = async (res, match, bot, alert) => {
     const saved_alert = await findAlert(alert);
     const send_alert = shouldSendAlert(saved_alert.alert.previous_result, res)
     await updateAlert(alert, res, send_alert); // always update alert with the latest result
