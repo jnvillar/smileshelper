@@ -84,7 +84,7 @@ const searchSingleDestination = async (match, msg, bot, send_message = true, ale
     }
 }
 
-const check_alert = async (res, groups, bot, alert) => {
+const check_alert = async (res, match, bot, alert) => {
     const saved_alert = await findAlert(alert);
     const send_alert = shouldSendAlert(saved_alert.alert.previous_result, res)
     await updateAlert(alert, res, send_alert); // always update alert with the latest result
@@ -94,7 +94,7 @@ const check_alert = async (res, groups, bot, alert) => {
 
     console.log(`sending alert ${alert.search} to ${alert.username}`)
     await bot.sendMessage(alert.chat_id, `alert: ${alert.search} podría haber bajado de precio`);
-    await sendMessageInChunks(bot, alert.chat_id, res, getInlineKeyboardMonths(groups));
+    await sendMessageInChunks(match, bot, alert.chat_id, res, getInlineKeyboardMonths(match));
 }
 
 function getMinPrice(text) {
