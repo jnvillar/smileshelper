@@ -106,7 +106,7 @@ const shouldRetryTax = (error) => {
 };
 
 const searchFlights = async (params) => {
-    const maxAttempts = 1;
+    const maxAttempts = 2;
     let attempts = 0;
     const search = `${params.originAirportCode} ${params.destinationAirportCode} ${params.departureDate}`
 
