@@ -106,7 +106,7 @@ const shouldRetryTax = (error) => {
 };
 
 const searchFlights = async (params) => {
-    const maxAttempts = 2;
+    const maxAttempts = 1; // more retries affects rate limiting
     let attempts = 0;
     const search = `${params.originAirportCode} ${params.destinationAirportCode} ${params.departureDate}`
 
