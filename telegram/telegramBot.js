@@ -333,7 +333,7 @@ const listen = async () => {
     });
 
     bot.on("callback_query", async (query) => {
-        if (!isUserAuthorized(bot, msg)) {
+        if (!isUserAuthorized(bot, query)) {
             return
         }
         const match = query.data.split(" ");
