@@ -162,7 +162,7 @@ const deleteAlert = async (msg, search) => {
         // Check if there are existing alerts
         if (Array.isArray(previousPreferences.alerts)) {
             // Find the index of the alert to delete based on its ID
-            const alertIndexToDelete = previousPreferences.alerts.findIndex(alert => alert.search === search);
+            const alertIndexToDelete = previousPreferences.alerts.findIndex(alert => alert.search.toLowerCase().trim() === search.toLowerCase().trim());
             const alert = previousPreferences.alerts[alertIndexToDelete];
 
             if (alertIndexToDelete !== -1) {
