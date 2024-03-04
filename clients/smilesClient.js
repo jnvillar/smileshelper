@@ -8,12 +8,12 @@ const {sortFlights, sortFlightsRoundTrip} = require('../flightsHelper');
 const {belongsToCity} = require('../utils/parser');
 
 const taxHeaders = {
-    'authority': 'api-airlines-boarding-tax-blue.smiles.com.br',
+    'authority': 'api-airlines-boarding-tax-prd.smiles.com.br',
     'Accept-Encoding': 'gzip, deflate, br'
 }
 
 const flightsHeaders = {
-    'authority': 'api-air-flightsearch-blue.smiles.com.br',
+    'authority': 'api-air-flightsearch-prd.smiles.com.br',
     'Accept-Encoding': 'gzip, deflate, br'
 }
 
