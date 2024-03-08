@@ -210,7 +210,10 @@ const authorizedUsers = [
 
 function isUserAuthorized(bot, msg) {
     const userId = msg.from.id;
-    const username = msg.from.username;
+    let username = msg.from.username;
+    if (username === undefined) {
+        username = ""
+    }
     const authorized = authorizedUsers.includes(userId.toString()) || authorizedUsers.includes(username.toLowerCase());
     if (!authorized) {
         console.log(`User ${userId} ${username} is not authorized to use the bot `)
