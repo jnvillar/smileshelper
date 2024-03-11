@@ -571,7 +571,7 @@ process.env.TZ = 'America/Argentina/Buenos_Aires'
 listen();
 
 const queue = [];
-const intervalInSeconds = 60;
+const intervalInSeconds = 65;
 const rateLimitInterval = intervalInSeconds * 1000;
 let lastRequestTime = 0; // Timestamp of the last processed request
 let isProcessing = false;
