@@ -200,6 +200,7 @@ const getTelegramToken = () => {
 
 
 const authorizedUsers = [
+    "1379299692", // sandra
     "379299692", // SANDRA
     "leisanchez",
     "colopreda",
