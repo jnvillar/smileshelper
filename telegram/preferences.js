@@ -203,8 +203,7 @@ const createAlert = async (msg, search) => {
         "last_updated": (new Date()).toLocaleTimeString(),
         "alerts_send": 0,
         "alert_last_send_at": null,
-        "alert_last_send_result": null,
-        "username": msg.from.username || msg.from.id.toString(),
+        "alert_last_send_result": null
     };
 
     const {getOne} = getDbFunctions();
