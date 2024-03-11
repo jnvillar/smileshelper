@@ -182,9 +182,9 @@ const getFlights = async (parameters) => {
         getFlightPromises.push(searchFlights(params));
     }
 
-    const flightResults = (await Promise.all(getFlightPromises)).flat();
+    const flightResults = (await Promise.allSettled(getFlightPromises)).flat();
     const mappedFlightResults = (
-        await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
+        await Promise.allSettled(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
     )
         .filter(flight => validFlight(flight));
 
@@ -213,9 +213,9 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
         }
     }
 
-    const flightResults = (await Promise.all(getFlightPromises)).flat();
+    const flightResults = (await Promise.allSettled(getFlightPromises)).flat();
     const mappedFlightResults = (
-        await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
+        await Promise.allSettled(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
     )
         .filter(flight => validFlight(flight));
 
@@ -254,8 +254,8 @@ const getFlightsRoundTrip = async (parameters) => {
         getFlightPromises.push(searchFlights(paramsComing));
     }
 
-    const flightResults = (await Promise.all(getFlightPromises)).flat();
-    const mappedFlightResults = (await Promise.all(flightResults.map(flightResult => {
+    const flightResults = (await Promise.allSettled(getFlightPromises)).flat();
+    const mappedFlightResults = (await Promise.allSettled(flightResults.map(flightResult => {
         const cabinType = belongsToCity(flightResult.data?.requestedFlightSegmentList[0]?.airports?.departureAirportList[0]?.code, origin) ? cabinTypeGoing : cabinTypeComing;
         return createFlightObject(flightResult, preferences, cabinType);
     }))).filter(flight => validFlight(flight));
