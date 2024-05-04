@@ -107,6 +107,7 @@ function getMinPrice(text) {
     }, Infinity);
     return (minPrice !== Infinity) ? minPrice : undefined;
 }
+
 function parsePrice(text) {
     const asteriskRegex = /\*([^\*]+)\*/;
     const match = asteriskRegex.exec(text);
@@ -118,6 +119,7 @@ function parsePrice(text) {
 
     return firstNumber + numberWithK;
 }
+
 function shouldSendAlert(previous_result, new_result) {
     try {
         const previousMinPrice = getMinPrice(previous_result);
@@ -125,6 +127,9 @@ function shouldSendAlert(previous_result, new_result) {
             return true
         }
         const newMinPrice = getMinPrice(new_result);
+        if (newMinPrice === undefined) {
+            return false
+        }
         return newMinPrice < previousMinPrice;
     } catch (e) {
         console.error(`error comparing previous and new result`, {
