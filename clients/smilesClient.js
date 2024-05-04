@@ -9,12 +9,12 @@ const {belongsToCity} = require('../utils/parser');
 
 const taxHeaders = {
     'authority': 'api-airlines-boarding-tax-prd.smiles.com.br',
-    'Accept-Encoding': 'gzip, deflate, br'
+    'Accept-Encoding': 'gzip, deflate, br, zstd'
 }
 
 const flightsHeaders = {
     'authority': 'api-air-flightsearch-prd.smiles.com.br',
-    'Accept-Encoding': 'gzip, deflate, br'
+    'Accept-Encoding': 'gzip, deflate, br, zstd'
 }
 
 const user_agents = [
