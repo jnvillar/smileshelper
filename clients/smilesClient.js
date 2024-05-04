@@ -13,7 +13,7 @@ const taxHeaders = {
 }
 
 const flightsHeaders = {
-    'authority': 'api-airlines-boarding-tax-blue.smiles.com.br',
+    'authority': 'api-air-flightsearch-blue.smiles.com.br',
     'Accept-Encoding': 'gzip, deflate, br, zstd'
 }
 
