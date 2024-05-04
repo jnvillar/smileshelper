@@ -38,7 +38,7 @@ const SMILES_URL = "https://api-air-flightsearch-blue.smiles.com.br/v1/airlines"
 const TWITTER_OWN_ID = "1529767809105920000";
 const SMILES_EMISSION_URL = "https://www.smiles.com.ar/emission?";
 const SMILES_TAX_URL =
-    "https://api-air-flightsearch-blue.smiles.com.br/v1/airlines/flight";
+    "https://api-airlines-boarding-tax-blue.smiles.com.br/v1/airlines/flight";
 
 const airlinesCodes = `El listado de aerolíneas disponibles en Smiles es el siguiente: Use el código de 2 caracteres para configurar sus filtros:  \n\\\n\\AA: American Airlines\n\\AR: Aerolíneas Argentinas\n\\UX: Air Europa\n\\AM: AeroMéxico\n\\AV: Avianca\n\\CM: Copa Airlines\n\\AF: Air France\n\\KL: KLM\n\\AC: Air Canadá\n\\IB: Iberia\n\\EK: Emirates\n\\TK: Turkish Airlines\n\\TP: TAP Portugal\n\\SA: South African Airways\n\\ET: Ethiopian Airways\n\\AT: Royal Air Maroc\n\\KE: Korean Air\n\\2Z: Voe Pass\n\\G3: Gol\n\\VH: Viva Air\n\\A3: Aegean\n\\MS: Egyptair\n\\AS: Alaska Airlines\n\\EI: Aer Lingus\n\\VA: Virgin Australia\n\\V7: Volotea\n\\NH: Ana\n\\XW: Sky Express\n\\AI: Air India\n\\4O: Interjet\n\\OU: Croatia Airlines\n\\UP: Bahamas Air\n\\HA: Hawaiian Airlines\n\\OB: Boliviana de Aviación\n\\TR: Scoot\n\\OK: Czech Airlines\n\\JQ: Jetstar\n\\MN: Kulula\n\\PG: Bangkok Airways\n\\WM: Winair\n\\KQ: Kenya Airways\n\\BT: Air Baltic\n\\MU: China Estern\n\\ZP: Paranair\n\\ME: MEA\n\\GA: Garuda Indonesia\n\\HO: Juneyao Airlines\n\\SG: SpiceJet\n\\PY: Surinam Airways\n\\PS: UIA\n\\CX: Cathay Pacific\n\\TG: THAI\n\\JL: Japan Airlines\n\\S7: S7 Airlines\n\\FA: FlySafair\n\\H2: SKY Airline`;
 

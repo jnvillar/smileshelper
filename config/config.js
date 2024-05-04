@@ -7,6 +7,7 @@ const maxResults = process.env.MAX_RESULTS || 10;
 
 const smiles = {
     authorizationToken: [
+        'qZLyu8Nky1cUg7a5YaGEaS6ikEXkrj9EsmDhGhUkfGFDUDQTPOvNlt',
         '2AxJpkRmcppPwfj3C2knHajTa04ngCLWcVCR8iBK57byBY9IMx08JY',
     ],
     apiKey: process.env.SMILES_API_KEY || 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
