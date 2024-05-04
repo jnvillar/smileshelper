@@ -13,7 +13,7 @@ const taxHeaders = {
 }
 
 const flightsHeaders = {
-    'authority': 'api-air-flightsearch-prd.smiles.com.br',
+    'authority': 'api-airlines-boarding-tax-blue.smiles.com.br',
     'Accept-Encoding': 'gzip, deflate, br, zstd'
 }
 
@@ -49,9 +49,10 @@ const createAxiosClient = (baseURL, headers) => {
             'Language': "es-ES",
             'Origin': "https://www.smiles.com.ar",
             'Pragma': "no-cache",
+            'Priority': "u=1, i",
             'Referer': "https://www.smiles.com.ar/",
             'Region': "ARGENTINA",
-            'Sec-Ch-Ua': `"Not A(Brand";v="99", "Brave";v="121", "Chromium";v="121"`,
+            'Sec-Ch-Ua': `Chromium";v="124", "Brave";v="124", "Not-A.Brand";v="99`,
             'Sec-Ch-Ua-Mobile': "?0",
             'Sec-Ch-Ua-Platform': `"macOS"`,
             'Sec-Fetch-Dest': "empty",
