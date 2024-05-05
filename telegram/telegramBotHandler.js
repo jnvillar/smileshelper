@@ -84,17 +84,18 @@ const searchSingleDestination = async (match, msg, bot, send_message = true, ale
     }
 }
 
-const maybe_send_alert = async (res, match, bot, alert) => {
+const maybe_send_alert = async (new_result, match, bot, alert) => {
     const saved_alert = await findAlert(alert);
-    const send_alert = shouldSendAlert(saved_alert.alert.previous_result, res)
-    await updateAlert(alert, res, send_alert); // always update alert with the latest result
+    const previous_result = saved_alert.alert.previous_result;
+    const send_alert = shouldSendAlert(previous_result, new_result)
+    await updateAlert(alert, new_result, send_alert); // always update alert with the latest result
 
     // if saved alert did not have a previous result or diff was not found , return
-    if (saved_alert.alert.previous_result == null || !send_alert) return;
+    if (previous_result == null || !send_alert) return;
 
-    console.log(`sending alert ${alert.search} to ${alert.username}. Price: ${getMinPrice(res)}`);
+    console.log(`sending alert ${alert.search} to ${alert.username}. Price: ${getMinPrice(new_result)} vs ${getMinPrice(previous_result)}`);
     await bot.sendMessage(alert.chat_id, `alert: ${alert.search} podría haber bajado de precio`);
-    await sendMessageInChunks(match, bot, alert.chat_id, res, getInlineKeyboardMonths(match));
+    await sendMessageInChunks(match, bot, alert.chat_id, new_result, getInlineKeyboardMonths(match));
 }
 
 function getMinPrice(text) {
