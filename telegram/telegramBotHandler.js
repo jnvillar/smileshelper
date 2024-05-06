@@ -124,7 +124,7 @@ function parsePrice(text) {
 function shouldSendAlert(previous_result, new_result) {
     try {
         const previousMinPrice = getMinPrice(previous_result);
-        if (previousMinPrice === undefined) {
+        if (previousMinPrice === undefined && new_result !== undefined) {
             return true
         }
         const newMinPrice = getMinPrice(new_result);
