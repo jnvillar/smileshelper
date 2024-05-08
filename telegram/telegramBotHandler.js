@@ -98,6 +98,9 @@ const maybe_send_alert = async (new_result, match, bot, alert) => {
 
     await updateAlert(alert, new_result, send_alert)
 
+    if (!send_alert) {
+        return;
+    }
 
     console.log(`sending alert ${alert.search} to ${alert.username}. Price: ${new_price} vs ${old_price}`);
     await bot.sendMessage(alert.chat_id, `alert: ${alert.search} podría haber bajado de precio`);
