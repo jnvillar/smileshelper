@@ -92,7 +92,7 @@ const maybe_send_alert = async (new_result, match, bot, alert) => {
     const old_price = getMinPrice(previous_result)
     const new_price = getMinPrice(new_result)
 
-    if (new_price == null) {
+    if (new_price === undefined) {
         return;
     }
 
