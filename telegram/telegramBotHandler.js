@@ -87,7 +87,6 @@ const searchSingleDestination = async (match, msg, bot, send_message = true, ale
 const maybe_send_alert = async (new_result, match, bot, alert) => {
     const saved_alert = await findAlert(alert);
     const previous_result = saved_alert.alert.previous_result;
-    const send_alert = shouldSendAlert(previous_result, new_result)
 
     const old_price = getMinPrice(previous_result)
     const new_price = getMinPrice(new_result)
@@ -96,6 +95,7 @@ const maybe_send_alert = async (new_result, match, bot, alert) => {
         return;
     }
 
+    const send_alert = shouldSendAlert(previous_result, new_result)
     await updateAlert(alert, new_result, send_alert)
 
     if (!send_alert) {
@@ -109,6 +109,7 @@ const maybe_send_alert = async (new_result, match, bot, alert) => {
 
 function getMinPrice(text) {
     // if text does not contains jumpline (\n) return undefined
+    if (!text) return undefined;
     if (!text.includes("\n")) return undefined;
     const lines = text.split('\n').filter(line => line.trim() !== '');
     let minPrice = lines.reduce((min, line) => {
