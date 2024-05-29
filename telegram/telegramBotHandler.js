@@ -92,7 +92,7 @@ const maybe_send_alert = async (new_result, match, bot, alert) => {
     const old_price = getMinPrice(previous_result)
     const new_price = getMinPrice(new_result)
 
-    if (new_price === undefined) {
+    if (!new_price) {
         return;
     }
 
@@ -113,7 +113,7 @@ function getMinPrice(text) {
     const lines = text.split('\n').filter(line => line.trim() !== '');
     let minPrice = lines.reduce((min, line) => {
         const price = parsePrice(line);
-        return (price !== undefined) ? Math.min(min, price) : min;
+        return price ? Math.min(min, price) : min;
     }, Infinity);
     return (minPrice !== Infinity) ? minPrice : undefined;
 }
@@ -134,10 +134,10 @@ function shouldSendAlert(previous_result, new_result) {
     try {
         const previousMinPrice = getMinPrice(previous_result);
         const newMinPrice = getMinPrice(new_result);
-        if (previousMinPrice === undefined && new_result !== undefined) {
+        if (!previousMinPrice && new_result) {
             return true
         }
-        if (newMinPrice === undefined) {
+        if (!newMinPrice) {
             return false
         }
         return newMinPrice < previousMinPrice;
