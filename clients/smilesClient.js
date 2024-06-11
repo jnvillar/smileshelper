@@ -26,7 +26,6 @@ const headers = {
 const httpAgent = new http.Agent(agentOptions);
 const httpsAgent = new https.Agent(agentOptions);
 
-
 const user_agents = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
 ]
@@ -106,6 +105,7 @@ const searchFlights = async (params) => {
                 httpAgent: httpAgent,
                 httpsAgent: httpsAgent,
             })
+            console.log(res.data)
             return res
         },
         {
@@ -312,13 +312,19 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
     };
 
     try {
+        console.log("fetching tax")
         const res = await axios.get(SMILES_TAX_URL + '/boardingtax', {
             params: params,
-            headers: headers,
+            headers: {
+                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
+                'Accept-Encoding': 'gzip'
+            },
             responseType: 'json',
             httpAgent: httpAgent,
             httpsAgent: httpsAgent,
         })
+        console.log(res.data)
         const data = res.data
 
         const milesNumber = data?.totals?.totalBoardingTax?.miles;
