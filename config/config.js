@@ -7,7 +7,7 @@ const maxResults = process.env.MAX_RESULTS || 10;
 
 const smiles = {
     authorizationToken: [
-        '8bBOsfKjcwPWQmQcmCz8jKsd3T6cGFbBFg72pSOe0uTQ9AsR7Erq30',
+        'LjjYgOEj6ICHr5pA1qnCXZLQh70qr6uso05OY63XZ7iHGkwhwXj5TE',
     ],
     apiKey: process.env.SMILES_API_KEY || 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
     milePrice: process.env.SMILES_MILE_PRICE,

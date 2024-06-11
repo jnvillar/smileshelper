@@ -15,7 +15,8 @@ const taxHeaders = {
 
 const flightsHeaders = {
     'authority': 'api-air-flightsearch-blue.smiles.com.br',
-    'accept-encoding': 'gzip, deflate, br, zstd'
+    'accept-encoding': 'deflate, gzip',
+    'host': 'api-air-flightsearch-blue.smiles.com.br',
 }
 
 const user_agents = [
@@ -25,23 +26,24 @@ const user_agents = [
 const createAxiosClient = (baseURL, headers) => {
     const client = axios.create({
         baseURL: baseURL,
-        headers,
-        insecureHTTPParser: false,
         timeout: 60 * 1000,
+        decompress: true,
     });
 
-   /* client.interceptors.request.use(request => {
+    client.interceptors.request.use(request => {
         console.log('Starting Request', JSON.stringify(request, null, 2))
         return request
-    })*/
+    })
+
 
     client.interceptors.request.use(config => {
 
         auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`
         userAgent = user_agents[Math.floor(Math.random() * user_agents.length)]
         config.headers = {
-            ...headers,
-            'accept': "application/json, text/plain, */*",
+            'authority': 'api-air-flightsearch-blue.smiles.com.br',
+            'accept-encoding': 'deflate, gzip',
+            'host': 'api-air-flightsearch-blue.smiles.com.br',
             'accept-language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
             'authorization': `${auth}`,
             'cache-control': "no-cache",
@@ -59,8 +61,8 @@ const createAxiosClient = (baseURL, headers) => {
             'sec-fetch-mode': "cors",
             'sec-fetch-site': "cross-site",
             'sec-gpc': "1",
-            'user-agent': userAgent,
-            'x-api-key': smiles.apiKey,
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+            'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
         };
 
         const headersToRemove = ['X-Requested-With', 'XMLHttpRequest', 'common', 'delete', 'get', 'head', 'post', 'put', 'patch']
@@ -118,7 +120,10 @@ const searchFlights = async (params) => {
             if (attempts > 1) {
                 console.log(`retrying ${search}`);
             }
-            const {data} = await smilesClient.get("/search", {params});
+            const {data} = await smilesClient.get("/search", {
+                params: params,
+                decompress: true,
+            });
             return {data};
         },
         {
