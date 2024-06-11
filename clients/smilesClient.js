@@ -18,21 +18,14 @@ const agentOptions = {
     freeSocketTimeout: 30000
 };
 
+const headers = {
+    'x-api-key': smiles.apiKey,
+    'Accept-Encoding': 'gzip',
+    'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+}
 const httpAgent = new http.Agent(agentOptions);
 const httpsAgent = new https.Agent(agentOptions);
 
-
-const taxHeaders = {
-    'authority': 'api-airlines-boarding-tax-blue.smiles.com.br',
-    'accept-encoding': 'deflate, gzip',
-    'host': 'api-airlines-boarding-tax-blue.smiles.com.br',
-}
-
-const flightsHeaders = {
-    'authority': 'api-air-flightsearch-blue.smiles.com.br',
-    'accept-encoding': 'deflate, gzip, br',
-    'host': 'api-air-flightsearch-blue.smiles.com.br',
-}
 
 const user_agents = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
@@ -108,11 +101,7 @@ const searchFlights = async (params) => {
             }
             const res = await axios.get(SMILES_URL + '/search', {
                 params: params,
-                headers: {
-                    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-                    'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
-                    'Accept-Encoding': 'gzip'
-                },
+                headers: headers,
                 responseType: 'json',
                 httpAgent: httpAgent,
                 httpsAgent: httpsAgent,
@@ -325,11 +314,7 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
     try {
         const res = await axios.get(SMILES_TAX_URL + '/boardingtax', {
             params: params,
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-                'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
-                'Accept-Encoding': 'gzip'
-            },
+            headers: headers,
             responseType: 'json',
             httpAgent: httpAgent,
             httpsAgent: httpsAgent,
