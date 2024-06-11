@@ -6,33 +6,34 @@ const {parseDate, calculateFirstDay, lastDays} = require('../utils/days');
 const {getBestFlight} = require('../utils/calculate');
 const {sortFlights, sortFlightsRoundTrip} = require('../flightsHelper');
 const {belongsToCity} = require('../utils/parser');
+const zlib = require('zlib');
 
 const taxHeaders = {
-    'authority': 'api-airlines-boarding-tax-green.smiles.com.br',
-    'Accept-Encoding': 'gzip, deflate, br, zstd'
+    'authority': 'api-airlines-boarding-tax-blue.smiles.com.br',
+    'accept-encoding': 'gzip, deflate, br, zstd'
 }
 
 const flightsHeaders = {
-    'authority': 'api-air-flightsearch-green.smiles.com.br',
-    'Accept-Encoding': 'gzip, deflate, br, zstd'
+    'authority': 'api-air-flightsearch-blue.smiles.com.br',
+    'accept-encoding': 'gzip, deflate, br, zstd'
 }
 
 const user_agents = [
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 13; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
-    'Mozilla/5.0 (iPhone14,6; U; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/19E241 Safari/602.1',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
 ]
 
 const createAxiosClient = (baseURL, headers) => {
     const client = axios.create({
         baseURL: baseURL,
         headers,
-        insecureHTTPParser: true,
-        timeout: 60 * 1000
+        insecureHTTPParser: false,
+        timeout: 60 * 1000,
     });
+
+   /* client.interceptors.request.use(request => {
+        console.log('Starting Request', JSON.stringify(request, null, 2))
+        return request
+    })*/
 
     client.interceptors.request.use(config => {
 
@@ -40,26 +41,26 @@ const createAxiosClient = (baseURL, headers) => {
         userAgent = user_agents[Math.floor(Math.random() * user_agents.length)]
         config.headers = {
             ...headers,
-            'Accept': "application/json, text/plain, */*",
-            'Accept-Language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
-            'Authorization': `Bearer ${auth}`,
-            'Cache-Control': "no-cache",
-            'Channel': "Web",
-            'Language': "es-ES",
-            'Origin': "https://www.smiles.com.ar",
-            'Pragma': "no-cache",
-            'Priority': "u=1, i",
-            'Referer': "https://www.smiles.com.ar/",
-            'Region': "ARGENTINA",
-            'Sec-Ch-Ua': `Chromium";v="124", "Brave";v="124", "Not-A.Brand";v="99`,
-            'Sec-Ch-Ua-Mobile': "?0",
-            'Sec-Ch-Ua-Platform': `"macOS"`,
-            'Sec-Fetch-Dest': "empty",
-            'Sec-Fetch-Mode': "cors",
-            'Sec-Fetch-Site': "cross-site",
-            'Sec-Gpc': "1",
-            'User-Agent': userAgent,
-            'X-Api-Key': smiles.apiKey,
+            'accept': "application/json, text/plain, */*",
+            'accept-language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
+            'authorization': `${auth}`,
+            'cache-control': "no-cache",
+            'channel': "Web",
+            'language': "es-ES",
+            'origin': "https://www.smiles.com.ar",
+            'pragma': "no-cache",
+            'priority': "u=1, i",
+            'referer': "https://www.smiles.com.ar/",
+            'region': "ARGENTINA",
+            'sec-ch-ua': `"Brave";v="125", "Chromium";v="125", "Not.A/Brand";v="24"`,
+            'sec-ch-ua-mobile': "?0",
+            'sec-ch-ua-platform': `"macOS"`,
+            'sec-fetch-dest': "empty",
+            'sec-fetch-mode': "cors",
+            'sec-fetch-site': "cross-site",
+            'sec-gpc': "1",
+            'user-agent': userAgent,
+            'x-api-key': smiles.apiKey,
         };
 
         const headersToRemove = ['X-Requested-With', 'XMLHttpRequest', 'common', 'delete', 'get', 'head', 'post', 'put', 'patch']
