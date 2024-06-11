@@ -6,7 +6,6 @@ const {parseDate, calculateFirstDay, lastDays} = require('../utils/days');
 const {getBestFlight} = require('../utils/calculate');
 const {sortFlights, sortFlightsRoundTrip} = require('../flightsHelper');
 const {belongsToCity} = require('../utils/parser');
-const zlib = require('zlib');
 
 const taxHeaders = {
     'authority': 'api-airlines-boarding-tax-blue.smiles.com.br',
