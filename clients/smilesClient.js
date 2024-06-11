@@ -10,7 +10,8 @@ const zlib = require('zlib');
 
 const taxHeaders = {
     'authority': 'api-airlines-boarding-tax-blue.smiles.com.br',
-    'accept-encoding': 'gzip, deflate, br, zstd'
+    'accept-encoding': 'deflate, gzip',
+    'host': 'api-airlines-boarding-tax-blue.smiles.com.br',
 }
 
 const flightsHeaders = {
@@ -41,9 +42,7 @@ const createAxiosClient = (baseURL, headers) => {
         auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`
         userAgent = user_agents[Math.floor(Math.random() * user_agents.length)]
         config.headers = {
-            'authority': 'api-air-flightsearch-blue.smiles.com.br',
-            'accept-encoding': 'deflate, gzip',
-            'host': 'api-air-flightsearch-blue.smiles.com.br',
+            ...headers,
             'accept-language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
             'authorization': `${auth}`,
             'cache-control': "no-cache",
