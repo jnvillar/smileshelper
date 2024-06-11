@@ -1,4 +1,4 @@
-const axios = require('axios');
+const fetch = require('node-fetch');
 const {backOff} = require('exponential-backoff');
 const {SMILES_URL, SMILES_TAX_URL, tripTypes} = require('../config/constants');
 const {smiles, maxResults} = require('../config/config');
@@ -16,7 +16,7 @@ const taxHeaders = {
 
 const flightsHeaders = {
     'authority': 'api-air-flightsearch-blue.smiles.com.br',
-    'accept-encoding': 'deflate, gzip',
+    'accept-encoding': 'deflate, gzip, br',
     'host': 'api-air-flightsearch-blue.smiles.com.br',
 }
 
@@ -24,25 +24,15 @@ const user_agents = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
 ]
 
-const createAxiosClient = (baseURL, headers) => {
-    const client = axios.create({
-        baseURL: baseURL,
-        timeout: 60 * 1000,
-        decompress: true,
-    });
 
-  /*  client.interceptors.request.use(request => {
-        console.log('Starting Request', JSON.stringify(request, null, 2))
-        return request
-    })*/
+const createFetchClient = (baseURL, headers) => {
+    return async (endpoint, options = {}) => {
+        const auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`;
+        const userAgent = user_agents[Math.floor(Math.random() * user_agents.length)];
 
-
-    client.interceptors.request.use(config => {
-
-        auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`
-        userAgent = user_agents[Math.floor(Math.random() * user_agents.length)]
-        config.headers = {
+        options.headers = {
             ...headers,
+            ...options.headers,
             'accept-language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
             'authorization': `${auth}`,
             'cache-control': "no-cache",
@@ -60,24 +50,29 @@ const createAxiosClient = (baseURL, headers) => {
             'sec-fetch-mode': "cors",
             'sec-fetch-site': "cross-site",
             'sec-gpc': "1",
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+            'user-agent': userAgent,
             'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
         };
 
-        const headersToRemove = ['X-Requested-With', 'XMLHttpRequest', 'common', 'delete', 'get', 'head', 'post', 'put', 'patch']
-
+        const headersToRemove = ['X-Requested-With', 'XMLHttpRequest', 'common', 'delete', 'get', 'head', 'post', 'put', 'patch'];
         headersToRemove.forEach(header => {
-            delete config.headers[header];
+            delete options.headers[header];
         });
 
-        return config;
-    });
+       //console.log('Starting Request', JSON.stringify({ url: `${baseURL}${endpoint}`, options }, null, 2));
 
-    return client;
+        const response = await fetch(`${baseURL}${endpoint}`, options);
+        if (!response.ok) {
+            const error = new Error(`HTTP error! status: ${response.status}`);
+            error.code = response.status;
+            throw error;
+        }
+        return response.json();
+    };
 };
 
-const smilesClient = createAxiosClient(SMILES_URL, flightsHeaders);
-const smilesTaxClient = createAxiosClient(SMILES_TAX_URL, taxHeaders);
+const smilesClient = createFetchClient(SMILES_URL, flightsHeaders);
+const smilesTaxClient = createFetchClient(SMILES_TAX_URL, taxHeaders);
 
 const handleError = (error, id) => {
     const errorDetails = {
@@ -119,9 +114,12 @@ const searchFlights = async (params) => {
             if (attempts > 1) {
                 console.log(`retrying ${search}`);
             }
-            const {data} = await smilesClient.get("/search", {
+            const data = await smilesClient('/search', {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                },
                 params: params,
-                decompress: true,
             });
             return {data};
         },
@@ -329,7 +327,16 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
     };
 
     try {
-        const {data} = await smilesTaxClient.get("/boardingtax", {params})
+        const response = await smilesTaxClient('boardingtax', {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            },
+            params: params
+        });
+
+        const data = await response.json();
+
         const milesNumber = data?.totals?.totalBoardingTax?.miles;
         const moneyNumber = data?.totals?.totalBoardingTax?.money;
         return {
