@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 const {backOff} = require('exponential-backoff');
 const {SMILES_URL, SMILES_TAX_URL, tripTypes} = require('../config/constants');
 const {smiles, maxResults} = require('../config/config');
@@ -6,6 +6,20 @@ const {parseDate, calculateFirstDay, lastDays} = require('../utils/days');
 const {getBestFlight} = require('../utils/calculate');
 const {sortFlights, sortFlightsRoundTrip} = require('../flightsHelper');
 const {belongsToCity} = require('../utils/parser');
+
+const http = require('http');
+const https = require('https');
+
+const agentOptions = {
+    keepAlive: true,
+    maxSockets: Infinity,
+    maxFreeSockets: 10,
+    timeout: 60000,
+    freeSocketTimeout: 30000
+};
+
+const httpAgent = new http.Agent(agentOptions);
+const httpsAgent = new https.Agent(agentOptions);
 
 
 const taxHeaders = {
@@ -23,56 +37,6 @@ const flightsHeaders = {
 const user_agents = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
 ]
-
-
-const createFetchClient = (baseURL, headers) => {
-    return async (endpoint, options = {}) => {
-        const auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`;
-        const userAgent = user_agents[Math.floor(Math.random() * user_agents.length)];
-
-        options.headers = {
-            ...headers,
-            ...options.headers,
-            'accept-language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
-            'authorization': `${auth}`,
-            'cache-control': "no-cache",
-            'channel': "Web",
-            'language': "es-ES",
-            'origin': "https://www.smiles.com.ar",
-            'pragma': "no-cache",
-            'priority': "u=1, i",
-            'referer': "https://www.smiles.com.ar/",
-            'region': "ARGENTINA",
-            'sec-ch-ua': `"Brave";v="125", "Chromium";v="125", "Not.A/Brand";v="24"`,
-            'sec-ch-ua-mobile': "?0",
-            'sec-ch-ua-platform': `"macOS"`,
-            'sec-fetch-dest': "empty",
-            'sec-fetch-mode': "cors",
-            'sec-fetch-site': "cross-site",
-            'sec-gpc': "1",
-            'user-agent': userAgent,
-            'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
-        };
-
-        const headersToRemove = ['X-Requested-With', 'XMLHttpRequest', 'common', 'delete', 'get', 'head', 'post', 'put', 'patch'];
-        headersToRemove.forEach(header => {
-            delete options.headers[header];
-        });
-
-       //console.log('Starting Request', JSON.stringify({ url: `${baseURL}${endpoint}`, options }, null, 2));
-
-        const response = await fetch(`${baseURL}${endpoint}`, options);
-        if (!response.ok) {
-            const error = new Error(`HTTP error! status: ${response.status}`);
-            error.code = response.status;
-            throw error;
-        }
-        return response.json();
-    };
-};
-
-const smilesClient = createFetchClient(SMILES_URL, flightsHeaders);
-const smilesTaxClient = createFetchClient(SMILES_TAX_URL, taxHeaders);
 
 const handleError = (error, id) => {
     const errorDetails = {
@@ -103,6 +67,34 @@ const shouldRetryTax = (error) => {
     return isFlightListRelatedError || isServiceUnavailable || API_FAILURE_RETRY_CODES.includes(error.code);
 };
 
+const getHeaders = (extra) => {
+    const auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`;
+    const userAgent = user_agents[Math.floor(Math.random() * user_agents.length)];
+
+    return {
+        'accept-language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
+        'authorization': `${auth}`,
+        'cache-control': "no-cache",
+        'channel': "Web",
+        'language': "es-ES",
+        'origin': "https://www.smiles.com.ar",
+        'pragma': "no-cache",
+        'priority': "u=1, i",
+        'referer': "https://www.smiles.com.ar/",
+        'region': "ARGENTINA",
+        'sec-ch-ua': `"Brave";v="125", "Chromium";v="125", "Not.A/Brand";v="24"`,
+        'sec-ch-ua-mobile': "?0",
+        'sec-ch-ua-platform': `"macOS"`,
+        'sec-fetch-dest': "empty",
+        'sec-fetch-mode': "cors",
+        'sec-fetch-site': "cross-site",
+        'sec-gpc': "1",
+        'user-agent': userAgent,
+        'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
+        ...extra,
+    };
+};
+
 const searchFlights = async (params) => {
     const maxAttempts = 1; // more retries affects rate limiting
     let attempts = 0;
@@ -114,14 +106,18 @@ const searchFlights = async (params) => {
             if (attempts > 1) {
                 console.log(`retrying ${search}`);
             }
-            const data = await smilesClient('/search', {
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json'
-                },
+            const res = await axios.get(SMILES_URL + '/search', {
                 params: params,
-            });
-            return {data};
+                headers: {
+                    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                    'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
+                    'Accept-Encoding': 'gzip'
+                },
+                responseType: 'json',
+                httpAgent: httpAgent,
+                httpsAgent: httpsAgent,
+            })
+            return res
         },
         {
             jitter: "full",
@@ -327,15 +323,18 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
     };
 
     try {
-        const response = await smilesTaxClient('boardingtax', {
-            method: 'GET',
+        const res = await axios.get(SMILES_TAX_URL + '/boardingtax', {
+            params: params,
             headers: {
-                'content-type': 'application/json'
+                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
+                'Accept-Encoding': 'gzip'
             },
-            params: params
-        });
-
-        const data = await response.json();
+            responseType: 'json',
+            httpAgent: httpAgent,
+            httpsAgent: httpsAgent,
+        })
+        const data = res.data
 
         const milesNumber = data?.totals?.totalBoardingTax?.miles;
         const moneyNumber = data?.totals?.totalBoardingTax?.money;

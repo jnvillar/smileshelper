@@ -18,6 +18,7 @@
     "cli-progress": "^3.11.2",
     "dotenv": "^16.0.1",
     "exponential-backoff": "^3.1.0",
+    "got": "^14.4.1",
     "marked": "^4.2.5",
     "marked-terminal": "^5.1.1",
     "mongodb": "^4.9.0",
