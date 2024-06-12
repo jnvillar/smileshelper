@@ -340,7 +340,6 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
         return undefined
     }
 };
-
 const validFlight = (flight) =>
     flight.price &&
     flight.price !== Number.MAX_VALUE.toString() &&
