@@ -344,7 +344,6 @@ const validFlight = (flight) =>
     flight.price &&
     flight.price !== Number.MAX_VALUE.toString() &&
     flight.tax?.miles;
-
 const getBestFlightsCount = (preferencesMaxResults) =>
     !preferencesMaxResults
         ? parseInt(maxResults, 10)
