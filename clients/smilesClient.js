@@ -105,7 +105,6 @@ const searchFlights = async (params) => {
                 httpAgent: httpAgent,
                 httpsAgent: httpsAgent,
             })
-            console.log(res.data)
             return res
         },
         {
@@ -312,7 +311,6 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
     };
 
     try {
-        console.log("fetching tax")
         const res = await axios.get(SMILES_TAX_URL + '/boardingtax', {
             params: params,
             headers: {
@@ -324,7 +322,6 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
             httpAgent: httpAgent,
             httpsAgent: httpsAgent,
         })
-        console.log(res.data)
         const data = res.data
 
         const milesNumber = data?.totals?.totalBoardingTax?.miles;
