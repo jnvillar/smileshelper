@@ -175,6 +175,7 @@ const getFlights = async (parameters) => {
         .map(result => result.value)  // Extracting the value of the fulfilled promises
         .flat();  // Flattening the array of results
 
+    console.log("fetch tax")
     const mappedFlightResults = (
         await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
     )
@@ -211,6 +212,7 @@ const getFlightsMultipleCities = async (parameters, fixedDay, isMultipleOrigin) 
         .map(result => result.value)  // Extracting the value of the fulfilled promises
         .flat();  // Flattening the array of results
 
+    console.log("fetch tax")
     const mappedFlightResults = (
         await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
     )
@@ -256,6 +258,7 @@ const getFlightsRoundTrip = async (parameters) => {
         .map(result => result.value)  // Extracting the value of the fulfilled promises
         .flat();  // Flattening the array of results
 
+    console.log("fetch tax")
     const mappedFlightResults = (await Promise.allSettled(flightResults.map(flightResult => {
         const cabinType = belongsToCity(flightResult.data?.requestedFlightSegmentList[0]?.airports?.departureAirportList[0]?.code, origin) ? cabinTypeGoing : cabinTypeComing;
         return createFlightObject(flightResult, preferences, cabinType);
