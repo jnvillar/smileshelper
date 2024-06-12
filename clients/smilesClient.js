@@ -309,7 +309,6 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
         type: "SEGMENT_1",
         highlightText: isSmilesMoney ? "SMILES_MONEY_CLUB" : "SMILES_CLUB",
     };
-
     try {
         const res = await axios.get(SMILES_TAX_URL + '/boardingtax', {
             params: params,
