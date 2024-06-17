@@ -9,7 +9,7 @@ const smiles = {
     authorizationToken: [
         'LjjYgOEj6ICHr5pA1qnCXZLQh70qr6uso05OY63XZ7iHGkwhwXj5TE',
     ],
-    apiKey: process.env.SMILES_API_KEY || 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
+    apiKey: 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
     milePrice: process.env.SMILES_MILE_PRICE,
 };
 

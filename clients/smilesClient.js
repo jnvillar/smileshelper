@@ -10,6 +10,14 @@ const {belongsToCity} = require('../utils/parser');
 const http = require('http');
 const https = require('https');
 
+axios.defaults.headers.common = {};
+axios.defaults.headers.delete = {};
+axios.defaults.headers.get = {};
+axios.defaults.headers.head = {};
+axios.defaults.headers.post = {};
+axios.defaults.headers.put = {};
+axios.defaults.headers.patch = {};
+
 const agentOptions = {
     keepAlive: true,
     maxSockets: Infinity,
@@ -18,17 +26,21 @@ const agentOptions = {
     freeSocketTimeout: 30000
 };
 
-const headers = {
-    'x-api-key': smiles.apiKey,
-    'Accept-Encoding': 'gzip',
-    'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+const searchHeaders = {
+    'x-api-key': "aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw",
+    'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    'accept-encoding': 'gzip',
+  /*  'accept-encoding': 'gzip, deflate, br, zstd',
+    "accept": 'application/json, text/plain, *!/!*',
+    "Host": "api-air-flightsearch-blue.smiles.com.br",
+    'origin': "https://www.smiles.com.ar",
+    'region': "ARGENTINA",*/
 }
-const httpAgent = new http.Agent(agentOptions);
-const httpsAgent = new https.Agent(agentOptions);
-
-const user_agents = [
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
-]
+const taxHeaders = {
+    'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
+    'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    'accept-encoding': 'gzip',
+}
 
 const handleError = (error, id) => {
     const errorDetails = {
@@ -53,40 +65,6 @@ const shouldRetry = (error) => {
     return isFlightListRelatedError || isServiceUnavailable || API_FAILURE_RETRY_CODES.includes(error.code);
 };
 
-const shouldRetryTax = (error) => {
-    const isFlightListRelatedError = FLIGHT_LIST_ERRORS.includes(error.response?.data?.error);
-    const isServiceUnavailable = error.response?.status === SERVICE_UNAVAILABLE_STATUS;
-    return isFlightListRelatedError || isServiceUnavailable || API_FAILURE_RETRY_CODES.includes(error.code);
-};
-
-const getHeaders = (extra) => {
-    const auth = `Bearer ${smiles.authorizationToken[Math.floor(Math.random() * smiles.authorizationToken.length)]}`;
-    const userAgent = user_agents[Math.floor(Math.random() * user_agents.length)];
-
-    return {
-        'accept-language': "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
-        'authorization': `${auth}`,
-        'cache-control': "no-cache",
-        'channel': "Web",
-        'language': "es-ES",
-        'origin': "https://www.smiles.com.ar",
-        'pragma': "no-cache",
-        'priority': "u=1, i",
-        'referer': "https://www.smiles.com.ar/",
-        'region': "ARGENTINA",
-        'sec-ch-ua': `"Brave";v="125", "Chromium";v="125", "Not.A/Brand";v="24"`,
-        'sec-ch-ua-mobile': "?0",
-        'sec-ch-ua-platform': `"macOS"`,
-        'sec-fetch-dest': "empty",
-        'sec-fetch-mode': "cors",
-        'sec-fetch-site': "cross-site",
-        'sec-gpc': "1",
-        'user-agent': userAgent,
-        'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
-        ...extra,
-    };
-};
-
 const searchFlights = async (params) => {
     const maxAttempts = 1; // more retries affects rate limiting
     let attempts = 0;
@@ -100,11 +78,11 @@ const searchFlights = async (params) => {
             }
             const res = await axios.get(SMILES_URL + '/search', {
                 params: params,
-                headers: headers,
-                responseType: 'json',
-                httpAgent: httpAgent,
-                httpsAgent: httpsAgent,
+                headers: searchHeaders,
+                timeout: 30 * 1000,
+                insecureHTTPParser: false,
             })
+            console.log(res)
             return res
         },
         {
@@ -175,7 +153,9 @@ const getFlights = async (parameters) => {
         .map(result => result.value)  // Extracting the value of the fulfilled promises
         .flat();  // Flattening the array of results
 
-    console.log("fetch tax")
+    if (flightResults.length > 0) {
+        console.log("fetching tax")
+    }
     const mappedFlightResults = (
         await Promise.all(flightResults.map(flightResult => createFlightObject(flightResult, preferences, cabinType)))
     )
@@ -258,7 +238,6 @@ const getFlightsRoundTrip = async (parameters) => {
         .map(result => result.value)  // Extracting the value of the fulfilled promises
         .flat();  // Flattening the array of results
 
-    console.log("fetch tax")
     const mappedFlightResults = (await Promise.allSettled(flightResults.map(flightResult => {
         const cabinType = belongsToCity(flightResult.data?.requestedFlightSegmentList[0]?.airports?.departureAirportList[0]?.code, origin) ? cabinTypeGoing : cabinTypeComing;
         return createFlightObject(flightResult, preferences, cabinType);
@@ -315,14 +294,9 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
     try {
         const res = await axios.get(SMILES_TAX_URL + '/boardingtax', {
             params: params,
-            headers: {
-                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-                'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
-                'Accept-Encoding': 'gzip'
-            },
-            responseType: 'json',
-            httpAgent: httpAgent,
-            httpsAgent: httpsAgent,
+            headers: taxHeaders,
+            timeout: 30 * 1000,
+            insecureHTTPParser: false,
         })
         const data = res.data
 
