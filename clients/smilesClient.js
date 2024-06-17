@@ -79,7 +79,7 @@ const searchFlights = async (params) => {
             const res = await axios.get(SMILES_URL + '/search', {
                 params: params,
                 headers: searchHeaders,
-                timeout: 50 * 1000,
+                timeout: 51 * 1000,
                 insecureHTTPParser: false,
             })
             console.log(res)
