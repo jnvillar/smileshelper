@@ -82,7 +82,6 @@ const searchFlights = async (params) => {
                 timeout: 51 * 1000,
                 insecureHTTPParser: false,
             })
-            console.log(res)
             return res
         },
         {
