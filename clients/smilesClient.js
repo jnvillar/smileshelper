@@ -34,7 +34,7 @@ const searchHeaders = {
     "accept": 'application/json, text/plain, *!/!*',
     "Host": "api-air-flightsearch-blue.smiles.com.br",
     'origin': "https://www.smiles.com.ar",
-    'region': "ARGENTINA",*/
+,*/
 }
 const taxHeaders = {
     'x-api-key': 'aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw',
