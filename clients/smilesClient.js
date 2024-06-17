@@ -79,7 +79,7 @@ const searchFlights = async (params) => {
             const res = await axios.get(SMILES_URL + '/search', {
                 params: params,
                 headers: searchHeaders,
-                timeout: 30 * 1000,
+                timeout: 50 * 1000,
                 insecureHTTPParser: false,
             })
             console.log(res)
@@ -295,7 +295,7 @@ const getTax = async (uid, fareuid, isSmilesMoney) => {
         const res = await axios.get(SMILES_TAX_URL + '/boardingtax', {
             params: params,
             headers: taxHeaders,
-            timeout: 30 * 1000,
+            timeout: 50 * 1000,
             insecureHTTPParser: false,
         })
         const data = res.data
