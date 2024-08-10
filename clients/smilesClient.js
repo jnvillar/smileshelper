@@ -10,6 +10,19 @@ const {belongsToCity} = require('../utils/parser');
 const http = require('http');
 const https = require('https');
 const dns = require('dns');
+const zlib = require('zlib');
+
+axios.interceptors.response.use(response => {
+    const encoding = response.headers['content-encoding'];
+
+    if (encoding === 'gzip') {
+        response.data = zlib.gunzipSync(response.data);
+    } else if (encoding === 'deflate') {
+        response.data = zlib.inflateSync(response.data);
+    }
+
+    return response;
+});
 
 // Set up custom DNS resolver
 const customDnsResolver = new dns.promises.Resolver();
@@ -79,7 +92,7 @@ const agentOptions = {
 const searchHeaders = {
     'x-api-key': "aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw",
     'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-    'accept-encoding': 'gzip',
+    'accept-encoding': 'gzip, deflate',
     'content-type': 'application/json',
     'content-encoded': 'gzip',
     'origin': "https://www.smiles.com.ar",
