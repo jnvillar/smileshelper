@@ -15,15 +15,27 @@ const dns = require('dns');
 const customDnsResolver = new dns.promises.Resolver();
 customDnsResolver.setServers(['1.1.1.1', '8.8.8.8']);
 
-// Create a custom lookup function
+// Create a custom lookup function that supports both IPv4 and IPv6
 const customLookup = (hostname, options, callback) => {
-    customDnsResolver.resolve4(hostname)
-        .then((addresses) => {
-            callback(null, addresses[0], 4); // return the first resolved IPv4 address
-        })
-        .catch((err) => {
-            callback(err);
-        });
+    if (options.family === 6) {
+        // IPv6 lookup
+        customDnsResolver.resolve6(hostname)
+            .then((addresses) => {
+                callback(null, addresses[0], 6); // return the first resolved IPv6 address
+            })
+            .catch((err) => {
+                callback(err);
+            });
+    } else {
+        // Default to IPv4 lookup
+        customDnsResolver.resolve4(hostname)
+            .then((addresses) => {
+                callback(null, addresses[0], 4); // return the first resolved IPv4 address
+            })
+            .catch((err) => {
+                callback(err);
+            });
+    }
 };
 
 const customHttpAgent = new http.Agent({
