@@ -9,6 +9,44 @@ const {belongsToCity} = require('../utils/parser');
 
 const http = require('http');
 const https = require('https');
+const dns = require('dns');
+
+// Set up custom DNS resolver
+const customDnsResolver = new dns.promises.Resolver();
+customDnsResolver.setServers(['1.1.1.1']);
+
+// Create a custom lookup function
+const customLookup = (hostname, options, callback) => {
+    customDnsResolver.resolve4(hostname)
+        .then((addresses) => {
+            callback(null, addresses[0], 4); // return the first resolved IPv4 address
+        })
+        .catch((err) => {
+            callback(err);
+        });
+};
+
+const customHttpAgent = new http.Agent({
+    keepAlive: true,
+    maxSockets: Infinity,
+    maxFreeSockets: 10,
+    timeout: 60000,
+    freeSocketTimeout: 30000,
+    lookup: customLookup
+});
+
+const customHttpsAgent = new https.Agent({
+    keepAlive: true,
+    maxSockets: Infinity,
+    maxFreeSockets: 10,
+    timeout: 60000,
+    freeSocketTimeout: 30000,
+    lookup: customLookup
+});
+
+// Setting the default agent for axios
+axios.defaults.httpAgent = customHttpAgent;
+axios.defaults.httpsAgent = customHttpsAgent;
 
 axios.defaults.headers.common = {};
 axios.defaults.headers.delete = {};
