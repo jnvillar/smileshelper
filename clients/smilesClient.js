@@ -104,6 +104,7 @@ const handleError = (error, id) => {
     return {data: {requestedFlightSegmentList: [{flightList: []}]}};
 };
 
+
 const API_FAILURE_RETRY_CODES = ["ETIMEDOUT", "EAI_AGAIN", "ECONNRESET", "ERR_BAD_RESPONSE"];
 const FLIGHT_LIST_ERRORS = [
     "TypeError: Cannot read properties of undefined (reading 'flightList')",
