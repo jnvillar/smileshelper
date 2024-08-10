@@ -13,7 +13,7 @@ const dns = require('dns');
 
 // Set up custom DNS resolver
 const customDnsResolver = new dns.promises.Resolver();
-customDnsResolver.setServers(['1.1.1.1']);
+customDnsResolver.setServers(['1.1.1.1', '8.8.8.8']);
 
 // Create a custom lookup function
 const customLookup = (hostname, options, callback) => {
