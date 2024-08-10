@@ -82,6 +82,7 @@ const searchHeaders = {
     'accept-encoding': 'gzip',
     'content-type': 'application/json',
     'content-encoded': 'gzip',
+    'origin': "https://www.smiles.com.ar",
   /*  'accept-encoding': 'gzip, deflate, br, zstd',
     "accept": 'application/json, text/plain, *!/!*',
     "Host": "api-air-flightsearch-blue.smiles.com.br",
