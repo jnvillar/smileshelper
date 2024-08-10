@@ -77,18 +77,42 @@ const agentOptions = {
     freeSocketTimeout: 30000
 };
 
+const searchHeaders2 = {
+    'x-api-key': "aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Accept-Language": "es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    //"Host": "content-prd.smiles.com.ar",
+    "Origin": 'https:www.smiles.com.ar',
+    "Pragma": "no-cache",
+    "Referer": 'https://www.smiles.com.ar/',
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-site",
+    "Sec-GPC": "1",
+    "User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "Chrome/",127.0.0.0 Safari/537.36',
+    "sec-ch-ua": 'Not)A;Brand";v="99", "Brave";v="127", "Chromium";v="127',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "macOS",
+}
+
 const searchHeaders = {
     'x-api-key': "aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw",
-    'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-    'accept-encoding': 'deflate, gzip, br, *',
+    'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+    'Accept-Encoding': 'gzip, deflate, br, zstd',
     'content-type': 'application/json',
-    'origin': "https://www.smiles.com.ar",
-  /*  'accept-encoding': 'gzip, deflate, br, zstd',
-    "accept": 'application/json, text/plain, *!/!*',
-    'content-encoded': 'gzip',
-    "Host": "api-air-flightsearch-blue.smiles.com.br",
-    'origin': "https://www.smiles.com.ar",
-,*/
+    'Origin': "https://www.smiles.com.ar",
+    'Referer': 'https://www.smiles.com.ar/',
+    'Accept-Language': 'es-AR,es;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es-419;q=0.5',
+    'Accept': 'application/json, text/plain, */*'
+    /*  'accept-encoding': 'gzip, deflate, br, zstd',
+      "accept": 'application/json, text/plain, *!/!*',
+      'content-encoded': 'gzip',
+      "Host": "api-air-flightsearch-blue.smiles.com.br",
+      'origin': "https://www.smiles.com.ar",
+  ,*/
 }
 
 const taxHeaders = {
