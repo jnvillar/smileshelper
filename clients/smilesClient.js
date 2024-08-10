@@ -80,6 +80,8 @@ const searchHeaders = {
     'x-api-key': "aJqPU7xNHl9qN3NVZnPaJ208aPo2Bh2p2ZV844tw",
     'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
     'accept-encoding': 'gzip',
+    'content-type': 'application/json',
+    'content-encoded': 'gzip',
   /*  'accept-encoding': 'gzip, deflate, br, zstd',
     "accept": 'application/json, text/plain, *!/!*',
     "Host": "api-air-flightsearch-blue.smiles.com.br",
@@ -130,7 +132,7 @@ const searchFlights = async (params) => {
                 params: params,
                 headers: searchHeaders,
                 timeout: 51 * 1000,
-                insecureHTTPParser: false,
+                insecureHTTPParser: true,
             })
             return res
         },
